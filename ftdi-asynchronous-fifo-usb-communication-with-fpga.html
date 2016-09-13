@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link href='//fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,700,400italic' rel='stylesheet' type='text/css'>
+
+    <link rel="stylesheet/less" type="text/css" href="http://rohitksingh.in/theme/stylesheet/style.less">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/less.js/2.5.1/less.min.js" type="text/javascript"></script>
+
+  <link rel="stylesheet" type="text/css" href="http://rohitksingh.in/theme/pygments/default.min.css">
+  <link rel="stylesheet" type="text/css" href="http://rohitksingh.in/theme/font-awesome/css/font-awesome.min.css">
+
+
+    <link href="http://rohitksingh.in/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Rohit's Blog Atom">
+
+
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="" />
+
+    <!-- Chrome, Firefox OS and Opera -->
+    <meta name="theme-color" content="#333333">
+    <!-- Windows Phone -->
+    <meta name="msapplication-navbutton-color" content="#333333">
+    <!-- iOS Safari -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+<meta name="author" content="Rohit" />
+<meta name="description" content="In this article, we walk through technical details of FTDI's Asynchronous FIFO interface which is necessary for this project, then we will proceed to the designing part where we design the FSM (or, algorithm in software parlance), and after that we simply implement our designed FSM in VHDL. Once VHDL coding is done, we verify our design through simulation. Finally, we test our design on hardware and benchmark the performace i.e, the transfer rate achieved." />
+<meta name="keywords" content="ftdi, ft2232, fifo, usb, vhdl, verilog, fpga, asynchronous fifo, migen, electronics, hardware">
+<meta property="og:site_name" content="Rohit's Blog"/>
+<meta property="og:title" content="FTDI Asynchronous FIFO USB Communication With FPGA"/>
+<meta property="og:description" content="In this article, we walk through technical details of FTDI's Asynchronous FIFO interface which is necessary for this project, then we will proceed to the designing part where we design the FSM (or, algorithm in software parlance), and after that we simply implement our designed FSM in VHDL. Once VHDL coding is done, we verify our design through simulation. Finally, we test our design on hardware and benchmark the performace i.e, the transfer rate achieved."/>
+<meta property="og:locale" content="en_US"/>
+<meta property="og:url" content="http://rohitksingh.in/ftdi-asynchronous-fifo-usb-communication-with-fpga.html"/>
+<meta property="og:type" content="article"/>
+<meta property="article:published_time" content="2016-08-20 10:10:00+05:30"/>
+<meta property="article:modified_time" content="2016-08-31 23:25:00+05:30"/>
+<meta property="article:author" content="http://rohitksingh.in/author/rohit.html">
+<meta property="article:section" content="Hardware"/>
+<meta property="article:tag" content="ftdi"/>
+<meta property="article:tag" content="ft2232"/>
+<meta property="article:tag" content="fifo"/>
+<meta property="article:tag" content="usb"/>
+<meta property="article:tag" content="vhdl"/>
+<meta property="article:tag" content="verilog"/>
+<meta property="article:tag" content="fpga"/>
+<meta property="article:tag" content="asynchronous fifo"/>
+<meta property="article:tag" content="migen"/>
+<meta property="article:tag" content="electronics"/>
+<meta property="article:tag" content="hardware"/>
+<meta property="og:image" content="">
+  <title>Rohit's Blog</title>
+</head>
+<body>
+  <aside>
+    <div>
+      <a href="http://rohitksingh.in">
+        <img src="http://rohitksingh.in/theme/img/profile.png" alt="Rohit Singh" title="Rohit Singh">
+      </a>
+      <h1><a href="http://rohitksingh.in">Rohit Singh</a></h1>
+<p>Scientist. Engineer. Designer. Lover. Perfect</p>      <nav>
+        <ul class="list">
+          <li><a href="http://rohitksingh.in" target="_blank">portfolio</a></li>
+          <li><a href="http://rohitksingh.in" target="_blank">stories</a></li>
+          <li><a href="http://rohitksingh.in" target="_blank">about</a></li>
+        </ul>
+      </nav>
+      <ul class="social">
+        <li><a class="sc-linkedin" href="https://www.linkedin.com/in/rohit-kumar-singh" target="_blank"><i class="fa fa-linkedin"></i></a></li>
+        <li><a class="sc-github" href="https://github.com/rohit91" target="_blank"><i class="fa fa-github"></i></a></li>
+        <li><a class="sc-twitter" href="https://twitter.com/RohitK_Singh" target="_blank"><i class="fa fa-twitter"></i></a></li>
+        <li><a class="sc-rss" href="//rohitksingh.in/feeds/all.atom.xml" target="_blank"><i class="fa fa-rss"></i></a></li>
+      </ul>
+    </div>
+  </aside>
+  <main>
+    <nav>
+      <a href="http://rohitksingh.in">Home</a>
+      <a href="/archives.html">Archives</a>
+      <a href="/categories.html">Categories</a>
+      <a href="/tags.html">Tags</a>
+      <a href="http://rohitksingh.in/feeds/all.atom.xml">Atom</a>
+    </nav>
+
+<article>
+  <header>
+    <h1 id="ftdi-asynchronous-fifo-usb-communication-with-fpga">FTDI Asynchronous FIFO USB Communication With FPGA</h1>
+    <p>Posted on Sat 20 August 2016 in <a href="http://rohitksingh.in/category/hardware.html">Hardware</a></p>
+  </header>
+  
+  <div>
+    <h2>Introduction</h2>
+<p>I've had a Saturn board lying around for a long time. It's a nice board with <strong>Spartan 6</strong> series <strong>LX9</strong> FPGA in CSG324 package, <strong>512Mbits LPDDR</strong> memory which can run at upto <strong>166MHz</strong> and <strong>lots</strong> of IOs. And it also has an <strong>FT2232H</strong> IC on it. </p>
+<p>FT2232H is an interesting chip from FTDI, the manufacturer of well known USB-Serial ICs. It has 2 independent serial/FIFO channels, <strong>Channel A</strong> and <strong>Channel B</strong>. Each of these channels can be configured into various modes like UART, FIFO, JTAG, SPI, I2C etc. For Saturn, Channel A of FT2232H is reserved for FPGA configuration and flash programming. Channel B is generally used by user for UART communication. One thing to point out is that in Saturn, the control bus of Channel A is brought out to header, so we can use it for whatever purpose we desire.</p>
+<p>In this article, we walk through technical details of FTDI's Asynchronous FIFO interface which is necessary for this project, then we will proceed to the designing part where we design the FSM (or, algorithm in software parlance), and after that we simply implement our designed FSM in VHDL. Once VHDL coding is done, we verify our design through simulation. Finally, we test our design on hardware and benchmark the performace i.e, the transfer rate achieved.</p>
+<h2>FIFO Communication</h2>
+<p>FIFO is a common way of communication between two devices, specially if they are running at different speeds. </p>
+<h3>FT2232H FIFO Modes</h3>
+<p>FT2232H has two FIFO modes that a user can use for his/her purpose:</p>
+<ul>
+<li>Synchronous FIFO mode</li>
+<li>Asynchronous FIFO mode</li>
+</ul>
+<p>Synchronous FIFO mode can push data at much faster rate. All signals in this mode are driven synchronous with the 60MHz clock sourced from FTDI itself. [marcan] reports having achieved 42MB/s of transfer rates with synchronous FIFO Mode [1].  Whereas, asynchronous FIFO mode can only transfer data at quite lower rate, because, well its asynchronous! </p>
+<p>All points go in favour of synchronous FIFO mode, only except the fact that synchronous mode can only be used with Channel A of FT2232 and that in my Saturn board, Channel A is unfortunately unavailable to user because it is dedicated for FPGA configuration and flash programming. That leaves us Channel B of FT2232H available for use. But it only supports asynchronous FIFO mode. Bummer!</p>
+<p>So what if we only have the choice of asynchronous mode with us! We can still transfer data from PC to FPGA over USB at reasonably good speed. People have achieved over 14MB/s transfer rate using this mode. So lets take a detailed look at it before we try writing VHDL code for it.</p>
+<h3>Asynchronous FIFO Mode</h3>
+<p>FT2232H datasheet[2] has a some details on asynchronous mode. Let's first check out the pins/signals used for interfacing using this mode.</p>
+<p><strong>Pins:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>BDBUS[7:0]</code></td>
+<td>I/O</td>
+<td>D7 to D0 directional FIFO data. This bus is normally input unless RD# is low</td>
+</tr>
+<tr>
+<td><code>RXF#</code></td>
+<td>OUTPUT</td>
+<td>When high, do not read data from the FIFO. When low, there is data available in the FIFO which can be read by driving RD# low. When RD# goes high again RXF# will always go high and only become low again if there is another byte to read. During reset, this signal is tri-state, but pulled up to VCCIO via an internal 200k ohms resistor.</td>
+</tr>
+<tr>
+<td><code>TXE#</code></td>
+<td>OUTPUT</td>
+<td>When high, do not write data into the FIFO. When low, data can be written into the FIFO by strobing WR# high, then low. During reset this signal is tri-state, but pulled up to VCCIO via an internal 200k ohms resistor.</td>
+</tr>
+<tr>
+<td><code>RD#</code></td>
+<td>INPUT</td>
+<td>Enables the current FIFO data byte to be driven onto D0...D7 when RD# goes low. Fetches the next FIFO data byte (if available) from the receive FIFO buffer when RD# goes high.</td>
+</tr>
+<tr>
+<td><code>WR#</code></td>
+<td>INPUT</td>
+<td>Writes the data byte on the D0...D7 pins into the transmit buffer when WR# goes from high to low.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Read Timing Diagram:</strong> 
+<img alt="Read" src="http://rohitksingh.in/images/ftdi-async-fifo/read_timing_diagram.png" /></p>
+<p><strong>Write Timing Diagram:</strong>
+<img alt="Write" src="http://rohitksingh.in/images/ftdi-async-fifo/write_timing_diagram.png" /></p>
+<p><strong>Timing Parameters:</strong>
+<img alt="Timings" src="http://rohitksingh.in/images/ftdi-async-fifo/timing_parameters.png" /></p>
+<p><em>(All images above are from FT2232H Datasheet)</em></p>
+<h2>Design</h2>
+<hr />
+<p>Before doing anything, first we need to understand the timing diagrams shown above. Then we need to design our FSM as per our requirements. And finally, simply implement our FSM using either VHDL or Verilog or Migen. We'll be using VHDL for this article.</p>
+<h3>Demostration Goal</h3>
+<p>The high-level goal of this article is to implement Asynchronous FIFO based communication between FPGA and FTDI FT2232H over USB. And how exactly will we be demonstrating this? For that, we need a low-level goal defined. Let's just decide for this article, that we will be sending stream of data to the FTDI FT2232H over USB, and our FPGA board needs to read every byte of data from the stream, then increment the byte it just read, and finally send it back to our host PC via the same FT2232 chip using Asynchronous FIFO interface.</p>
+<h3>Understanding Timing Diagrams</h3>
+<p><em>Note:</em> Signals with <code>#</code> in their name are active-low signals. That means, they are active when low, and inactive when high. Asserting an active-low signal means driving them low. Deasserting an active-low signal means driving them back to high, their inactive state.</p>
+<p>When we send a byte of data from host PC over USB, to FTDI FT2232H IC, it gets stored in its internal receiver FIFO. We give commands through control sigals to read that data. Similarly, for sending something to host PC, we first write that data into FT2232H's transmitter FIFO, after which FT2232H automatically handles sending it to host PC over USB channel. </p>
+<h5>Read Timings:</h5>
+<p>Whenever FT2232H has data available for reading in its FIFO, it asserts the <strong><code>RXF</code></strong> signal (drives it low since it is an active-low signal). This indicates to the user that FT2232H has some data available from host PC in its receiver FIFO, and that user is now free to read it whenever he/she wants to. </p>
+<p>Now, for actually reading the data from FT2232H's FIFO, user has to assert the <strong><code>RD</code></strong> signal (drive it low). From the timing diagram and the timing parameters table, we find that user is free to assert <code>RD</code> signal as soon as <code>RXF</code> is active (parameterized by <strong><code>t5</code></strong> parameter in the table).</p>
+<p>After the user has driven <code>RD</code> signal low, he/she isn't supposed to read the data on <strong><code>DATA[7:0]</code></strong> lines instantly because there is no valid data on those lines! This is because FT2232H takes some time to fetch data from its receiver FIFO and put it on <code>DATA[7:0]</code> lines after <code>RD</code> is asserted. This time is parameterized by <strong><code>t3</code></strong> parameter. The table says, <code>t3</code> can be minimum 1ns to maximum 14ns. In digital designs, we design our systems according to worst-case situations. And here, the table says that in worst case, it may take for FT2232H almost 14ns to put data onto <code>DATA[7:0]</code> lines after we assert <code>RD</code> signal. So, to be always on safe side, we should read <code>DATA[7:0]</code> atleast 14ns after we have asserted <code>RD</code> signal. </p>
+<p>Now, 14ns is some uncomfortable time duration for us, because Saturn has 100MHz clock oscillator. Which means we have resolution of only 10ns. [Note: Its not that simple though, there are many ways to improve this resolution. But for this article, let's just go simple way] This means we can count in multiples of 10ns. So we have to wait for minimum 2 clock cycles (20ns) before reading <code>DATA[7:0]</code> lines. Please note that there is no maximum time limit for us to read the data. We are free to read it after 20ns, 30ns, 40ns etc. Any duration after 14ns is perfectly okay. </p>
+<p>After reading data from <code>DATA[7:0]</code> lines, we have to deassert the <code>RD</code> signal so FT2232H can know that we have successfully read that data which it had put on <code>DATA[7:0]</code> lines and now it can remove that data from its FIFO. But, there is one more catch! We can't deassert <code>RD</code> signal anytime. The timing parameter table says that active width of <code>RD</code> should be atleast 30ns. So if for example we were to read <code>DATA[7:0]</code> after 20ns of asserting <code>RD</code>, which is allowed, and if we then immediately deassert <code>RD</code>, it will result in violation of timings specifications, since <code>RD</code> has been active only for 20ns! So in this case, we should wait atleast 10ns more after reading data from DATA[7:0] lines before deasserting <code>RD</code>.</p>
+<p>After deasserting <code>RD</code> properly, we are done for the reading part! We don't need to care about anything else. FT2232H will handle rest for read part. </p>
+<p>This whole process needs to be repeated to every byte that we want to read. For every byte, it starts with <code>RXF</code> being asserted by FTDI and ends with <code>RD</code> being deassserted by the user after which FT2232H automatically deasserts <code>RXF</code> also after some time (check timing diagram).</p>
+<h5>Write Timings:</h5>
+<p>Write process starts with FT2232H asserting <code>TXE</code> signal indicating that it is now ready to accept data from the user which needs to be transmitted to host PC over USB.</p>
+<p>Although timing parameters table says that user can assert <code>WR</code> signal as soon as <code>TXE</code> is asserted by FT2232H, but in fact this is not allowed. There is one more catch! </p>
+<p>For valid trasmission, user needs to put the data which is to be transmitted onto <code>DATA[7:0]</code> lines for <code>t8</code> duration which is 5ns (also called setup time) before asserting <code>WR</code> and user also needs to keep/hold the data there for <code>t9</code> duration which is again 5ns (also called hold time). </p>
+<p>FT2232H will deassert <code>TXE</code> signal at maximum 14ns after <code>WR</code> is asserted by user. He/she needs to make sure that FT2232 has captured proper data by keeping the <code>t8</code> and <code>t9</code> timings mentioned in previous paragraph.</p>
+<p>Same as for <code>RD</code> signal, <code>WR</code> also needs to be asserted for atleast 30ns before it can be deasserted by user. In our case, that means 3 clock cycles (100MHz clock, remember?).</p>
+<p>As in case for read process, this process also needs to be repeated for every byte that we transmit.</p>
+<h3>TL;DR: Timings &amp; Interfacing</h3>
+<h5>Read process:</h5>
+<ol>
+<li>Wait till <code>RXF</code> is asserted (i.e, is driven low by FT2232)</li>
+<li>Assert <code>RD</code></li>
+<li>Read data from <code>DATA[7:0]</code> lines after atleast 14ns </li>
+<li>Deassert <code>RD</code> after atleast 30ns of its assertion</li>
+</ol>
+<h5>Write process:</h5>
+<ol>
+<li>Wait till <code>TXE</code> is asserted</li>
+<li>Put data to transmit onto <code>DATA[7:0]</code> bus</li>
+<li>Wait for atleast 5ns</li>
+<li>Assert <code>WR</code></li>
+<li>Hold the same data onto <code>DATA[7:0]</code> bus for atleast another 5ns</li>
+<li>Deassert <code>WR</code> after atleast 30ns of its assertion</li>
+</ol>
+<h3>FSM Design</h3>
+<table>
+<thead>
+<tr>
+<th>State</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>READ_IDLE</code></td>
+<td>Wait for <code>RXF</code> assertion. If <code>RXF</code> is asserted, assert <code>RD</code> and go to <code>READ_PREWAIT</code> state.</td>
+</tr>
+<tr>
+<td><code>READ_PREWAIT</code></td>
+<td>Wait for 2 clock cycles (20ns) then read data and go to <code>READ_POSTWAIT</code></td>
+</tr>
+<tr>
+<td><code>READ_POSTWAIT</code></td>
+<td>Wait for 2 clock cycles (20ns), deassert <code>RD</code> and the go to <code>WRITE_IDLE</code></td>
+</tr>
+<tr>
+<td><code>WRITE_IDLE</code></td>
+<td>Wait for <code>TXE</code> assertion. If <code>TXE</code> is asserted, put data onto DATA[7:0] bus and go to <code>WRITE_PREWAIT</code></td>
+</tr>
+<tr>
+<td><code>WRITE_WAIT</code></td>
+<td>By the time we check that we are into <code>WRITE_WAIT</code> state, 1 clock cycle (10ns) has already elasped. So there is no particular requirement to wait for 5ns. So, just assert <code>WR</code> now and and wait for 3 clock cycles and move to <code>WRITE_DONE</code></td>
+</tr>
+<tr>
+<td><code>WRITE_DONE</code></td>
+<td>Deassert <code>WR</code> and go to <code>READ_IDLE</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>IMPORTANT</strong>: <strong>Do not</strong> check for falling edge in above FSM! Instead, check for level. <code>RXF</code> and <code>TXE</code> might have already had their falling edge before you check for them, so your FSM gets stuck in IDLE state forever, because those <code>RXF</code> and <code>TXE</code> will never go high until you read/write but your code won't read/write since it is still in <code>IDLE</code> state waiting for falling edge which has already occurred and which won't occur again unless a read/write transaction is made! I initially made this same mistake, and most of the times my design would work but randomly fail after I would have transferred some number of bytes. It took sometime to figure out this bug!</p>
+<h3>Code</h3>
+<p><em><strong>Note</strong>: All files related to this project are available in my github repository: <a href="https://github.com/rohit91/ftdi-async-fifo">https://github.com/rohit91/ftdi-async-fifo</a></em> </p>
+<h4>VHDL</h4>
+<div class="highlight"><pre><span></span><span class="c1">--------------------------------------------------------------------------------</span>
+<span class="c1">-- Author  : Rohit Singh</span>
+<span class="c1">-- Module  : ft2232h - rtl</span>
+<span class="c1">-- Project : FT2232H Async FIFO</span>
+
+<span class="c1">-- License : The MIT License</span>
+<span class="c1">-- Copyright © 2015, 2016 Rohit K. Singh (contact [AT] rohitksingh.in)</span>
+<span class="c1">--------------------------------------------------------------------------------</span>
+
+<span class="k">library</span> <span class="nn">IEEE</span><span class="p">;</span>
+
+<span class="k">use</span> <span class="nn">IEEE.STD_LOGIC_1164.</span><span class="k">all</span><span class="p">;</span>
+<span class="k">use</span> <span class="nn">IEEE.NUMERIC_STD.</span><span class="k">all</span><span class="p">;</span>
+
+<span class="k">entity</span> <span class="nc">ft2232h</span> <span class="k">is</span>
+    <span class="k">port</span><span class="p">(</span>
+        <span class="n">clk</span>   <span class="o">:</span> <span class="k">in</span>    <span class="kt">std_logic</span><span class="p">;</span>
+        <span class="n">rst</span>   <span class="o">:</span> <span class="k">in</span> <span class="kt">std_logic</span><span class="p">;</span>
+
+        <span class="c1">-- FTDI FT2232H FIFO signals</span>
+        <span class="n">data</span>  <span class="o">:</span> <span class="k">inout</span> <span class="kt">std_logic_vector</span><span class="p">(</span><span class="mi">7</span> <span class="k">downto</span> <span class="mi">0</span><span class="p">);</span>
+        <span class="n">rxf_n</span> <span class="o">:</span> <span class="k">in</span>    <span class="kt">std_logic</span><span class="p">;</span>
+        <span class="n">txe_n</span> <span class="o">:</span> <span class="k">in</span>    <span class="kt">std_logic</span><span class="p">;</span>
+        <span class="n">rd_n</span>  <span class="o">:</span> <span class="k">out</span>   <span class="kt">std_logic</span><span class="p">;</span>
+        <span class="n">wr_n</span>  <span class="o">:</span> <span class="k">out</span>   <span class="kt">std_logic</span>
+    <span class="p">);</span>
+<span class="k">end</span> <span class="nc">ft2232h</span><span class="p">;</span>
+
+<span class="k">architecture</span> <span class="nc">rtl</span> <span class="k">of</span> <span class="nc">ft2232h</span> <span class="k">is</span>
+    <span class="k">signal</span> <span class="n">data_o</span>             <span class="o">:</span> <span class="kt">unsigned</span><span class="p">(</span><span class="mi">7</span> <span class="k">downto</span> <span class="mi">0</span><span class="p">)</span> <span class="o">:=</span> <span class="p">(</span><span class="k">others</span> <span class="o">=&gt;</span> <span class="sc">&#39;0&#39;</span><span class="p">);</span>
+    <span class="k">signal</span> <span class="n">data_i</span>             <span class="o">:</span> <span class="kt">unsigned</span><span class="p">(</span><span class="mi">7</span> <span class="k">downto</span> <span class="mi">0</span><span class="p">)</span> <span class="o">:=</span> <span class="p">(</span><span class="k">others</span> <span class="o">=&gt;</span> <span class="sc">&#39;0&#39;</span><span class="p">);</span>
+    <span class="k">signal</span> <span class="n">data_en</span>            <span class="o">:</span> <span class="kt">std_logic</span>            <span class="o">:=</span> <span class="sc">&#39;0&#39;</span><span class="p">;</span>
+
+    <span class="k">signal</span> <span class="n">rxf_n_meta</span>            <span class="o">:</span> <span class="kt">std_logic</span>            <span class="o">:=</span> <span class="sc">&#39;1&#39;</span><span class="p">;</span>
+    <span class="k">signal</span> <span class="n">txe_n_meta</span>            <span class="o">:</span> <span class="kt">std_logic</span>            <span class="o">:=</span> <span class="sc">&#39;1&#39;</span><span class="p">;</span>
+    <span class="k">signal</span> <span class="n">rxf_n_sync</span>            <span class="o">:</span> <span class="kt">std_logic</span>            <span class="o">:=</span> <span class="sc">&#39;1&#39;</span><span class="p">;</span>
+    <span class="k">signal</span> <span class="n">txe_n_sync</span>            <span class="o">:</span> <span class="kt">std_logic</span>            <span class="o">:=</span> <span class="sc">&#39;1&#39;</span><span class="p">;</span>
+
+    <span class="k">signal</span> <span class="n">rd_n_q</span>                <span class="o">:</span> <span class="kt">std_logic</span>            <span class="o">:=</span> <span class="sc">&#39;1&#39;</span><span class="p">;</span>
+    <span class="k">signal</span> <span class="n">wr_n_q</span>                <span class="o">:</span> <span class="kt">std_logic</span>            <span class="o">:=</span> <span class="sc">&#39;1&#39;</span><span class="p">;</span>
+
+    <span class="k">signal</span> <span class="n">reg</span>      <span class="o">:</span> <span class="kt">unsigned</span><span class="p">(</span><span class="mi">7</span> <span class="k">downto</span> <span class="mi">0</span><span class="p">)</span> <span class="o">:=</span> <span class="p">(</span><span class="k">others</span> <span class="o">=&gt;</span> <span class="sc">&#39;0&#39;</span><span class="p">);</span>
+
+    <span class="k">type</span> <span class="n">states</span> <span class="k">is</span> <span class="p">(</span><span class="n">RD_IDLE</span><span class="p">,</span> <span class="n">RD_PRE_WAIT</span><span class="p">,</span> <span class="n">RD_POST_WAIT</span><span class="p">,</span> <span class="n">WR_IDLE</span><span class="p">,</span> <span class="n">WR_WAIT</span><span class="p">,</span> <span class="n">WR_DONE</span><span class="p">);</span>
+    <span class="k">signal</span> <span class="n">state</span> <span class="o">:</span> <span class="n">states</span> <span class="o">:=</span> <span class="n">RD_IDLE</span><span class="p">;</span>
+
+    <span class="k">signal</span> <span class="n">counter</span>  <span class="o">:</span> <span class="kt">unsigned</span><span class="p">(</span><span class="mi">1</span> <span class="k">downto</span> <span class="mi">0</span><span class="p">)</span> <span class="o">:=</span> <span class="s">&quot;00&quot;</span><span class="p">;</span>
+
+<span class="k">begin</span>
+
+    <span class="c1">-- Bi-directional logic</span>
+    <span class="n">data</span>     <span class="o">&lt;=</span> <span class="kt">std_logic_vector</span><span class="p">(</span><span class="n">data_o</span><span class="p">)</span> <span class="k">when</span> <span class="n">data_en</span> <span class="o">=</span> <span class="sc">&#39;1&#39;</span> <span class="k">else</span> <span class="p">(</span><span class="k">others</span> <span class="o">=&gt;</span> <span class="sc">&#39;Z&#39;</span><span class="p">);</span>
+    <span class="n">data_i</span>   <span class="o">&lt;=</span> <span class="kt">unsigned</span><span class="p">(</span><span class="n">data</span><span class="p">);</span>
+
+    <span class="n">rd_n</span> <span class="o">&lt;=</span> <span class="n">rd_n_q</span><span class="p">;</span>
+    <span class="n">wr_n</span> <span class="o">&lt;=</span> <span class="n">wr_n_q</span><span class="p">;</span>
+
+    <span class="c1">-- Avoid metastability. Synchronize async signals  RXF and TXE</span>
+    <span class="nc">synchronizer</span><span class="o">:</span> <span class="k">process</span><span class="p">(</span><span class="n">clk</span><span class="p">)</span>
+    <span class="k">begin</span>
+        <span class="k">if</span> <span class="n">rising_edge</span><span class="p">(</span><span class="n">clk</span><span class="p">)</span> <span class="k">then</span>
+            <span class="n">rxf_n_meta</span>            <span class="o">&lt;=</span> <span class="n">rxf_n</span><span class="p">;</span>
+            <span class="n">txe_n_meta</span>            <span class="o">&lt;=</span> <span class="n">txe_n</span><span class="p">;</span>
+            <span class="n">rxf_n_sync</span>            <span class="o">&lt;=</span> <span class="n">rxf_n_meta</span><span class="p">;</span>
+            <span class="n">txe_n_sync</span>            <span class="o">&lt;=</span> <span class="n">txe_n_meta</span><span class="p">;</span>
+        <span class="k">end</span> <span class="k">if</span><span class="p">;</span>
+    <span class="k">end</span> <span class="k">process</span><span class="p">;</span>
+
+    <span class="nc">main</span><span class="o">:</span> <span class="k">process</span><span class="p">(</span><span class="n">clk</span><span class="p">,</span> <span class="n">rst</span><span class="p">)</span>
+    <span class="k">begin</span>
+        <span class="k">if</span> <span class="n">rst</span> <span class="o">=</span> <span class="sc">&#39;1&#39;</span> <span class="k">then</span>
+            <span class="n">state</span>   <span class="o">&lt;=</span> <span class="n">RD_IDLE</span><span class="p">;</span>
+            <span class="n">rd_n_q</span>  <span class="o">&lt;=</span> <span class="sc">&#39;1&#39;</span><span class="p">;</span>
+            <span class="n">wr_n_q</span>  <span class="o">&lt;=</span> <span class="sc">&#39;1&#39;</span><span class="p">;</span>
+            <span class="n">counter</span> <span class="o">&lt;=</span> <span class="p">(</span><span class="k">others</span> <span class="o">=&gt;</span> <span class="sc">&#39;0&#39;</span><span class="p">);</span>
+
+        <span class="k">elsif</span> <span class="n">rising_edge</span><span class="p">(</span><span class="n">clk</span><span class="p">)</span> <span class="k">then</span>
+            <span class="k">case</span> <span class="n">state</span> <span class="k">is</span>
+                <span class="k">when</span> <span class="n">RD_IDLE</span> <span class="o">=&gt;</span>
+                    <span class="k">if</span> <span class="n">rxf_n_sync</span> <span class="o">=</span> <span class="sc">&#39;0&#39;</span> <span class="k">then</span>
+                        <span class="n">rd_n_q</span> <span class="o">&lt;=</span> <span class="sc">&#39;0&#39;</span><span class="p">;</span>
+                        <span class="n">state</span>  <span class="o">&lt;=</span> <span class="n">RD_PRE_WAIT</span><span class="p">;</span>
+                    <span class="k">end</span> <span class="k">if</span><span class="p">;</span>
+                <span class="k">when</span> <span class="n">RD_PRE_WAIT</span> <span class="o">=&gt;</span>
+                    <span class="n">counter</span> <span class="o">&lt;=</span> <span class="n">counter</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+                    <span class="k">if</span> <span class="n">counter</span> <span class="o">=</span> <span class="s">&quot;01&quot;</span> <span class="k">then</span>
+                        <span class="n">state</span>   <span class="o">&lt;=</span> <span class="n">RD_POST_WAIT</span><span class="p">;</span>
+                        <span class="n">reg</span>     <span class="o">&lt;=</span> <span class="n">data_i</span><span class="p">;</span>
+                        <span class="n">counter</span> <span class="o">&lt;=</span> <span class="s">&quot;00&quot;</span><span class="p">;</span>
+                    <span class="k">end</span> <span class="k">if</span><span class="p">;</span>
+
+                <span class="k">when</span> <span class="n">RD_POST_WAIT</span> <span class="o">=&gt;</span>
+                    <span class="n">counter</span> <span class="o">&lt;=</span> <span class="n">counter</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+                    <span class="k">if</span> <span class="n">counter</span> <span class="o">=</span> <span class="s">&quot;01&quot;</span> <span class="k">then</span>
+                        <span class="n">rd_n_q</span>  <span class="o">&lt;=</span> <span class="sc">&#39;1&#39;</span><span class="p">;</span>
+                        <span class="n">state</span>   <span class="o">&lt;=</span> <span class="n">WR_IDLE</span><span class="p">;</span>
+                        <span class="n">counter</span> <span class="o">&lt;=</span> <span class="s">&quot;00&quot;</span><span class="p">;</span>
+                    <span class="k">end</span> <span class="k">if</span><span class="p">;</span>
+
+                <span class="k">when</span> <span class="n">WR_IDLE</span> <span class="o">=&gt;</span>
+                    <span class="k">if</span> <span class="n">txe_n_sync</span> <span class="o">=</span> <span class="sc">&#39;0&#39;</span> <span class="k">then</span>
+                        <span class="n">state</span>   <span class="o">&lt;=</span> <span class="n">WR_WAIT</span><span class="p">;</span>
+                        <span class="n">data_o</span>  <span class="o">&lt;=</span> <span class="n">reg</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+                        <span class="n">data_en</span> <span class="o">&lt;=</span> <span class="sc">&#39;1&#39;</span><span class="p">;</span>
+                    <span class="k">end</span> <span class="k">if</span><span class="p">;</span>
+
+                <span class="k">when</span> <span class="n">WR_WAIT</span> <span class="o">=&gt;</span>
+                    <span class="n">wr_n_q</span>  <span class="o">&lt;=</span> <span class="sc">&#39;0&#39;</span><span class="p">;</span>
+                    <span class="n">counter</span> <span class="o">&lt;=</span> <span class="n">counter</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+                    <span class="k">if</span> <span class="n">counter</span> <span class="o">=</span> <span class="s">&quot;11&quot;</span> <span class="k">then</span>
+                        <span class="n">state</span>   <span class="o">&lt;=</span> <span class="n">WR_DONE</span><span class="p">;</span>
+                        <span class="n">counter</span> <span class="o">&lt;=</span> <span class="s">&quot;00&quot;</span><span class="p">;</span>
+                        <span class="n">data_en</span> <span class="o">&lt;=</span> <span class="sc">&#39;0&#39;</span><span class="p">;</span>
+                    <span class="k">end</span> <span class="k">if</span><span class="p">;</span>
+
+                <span class="k">when</span> <span class="n">WR_DONE</span> <span class="o">=&gt;</span>
+                    <span class="n">wr_n_q</span>  <span class="o">&lt;=</span> <span class="sc">&#39;1&#39;</span><span class="p">;</span>
+                    <span class="n">state</span>   <span class="o">&lt;=</span> <span class="n">RD_IDLE</span><span class="p">;</span>
+
+            <span class="k">end</span> <span class="k">case</span><span class="p">;</span>
+        <span class="k">end</span> <span class="k">if</span><span class="p">;</span>
+    <span class="k">end</span> <span class="k">process</span><span class="p">;</span>
+
+<span class="k">end</span> <span class="nc">rtl</span><span class="p">;</span>
+</pre></div>
+
+
+<h2>Simulation</h2>
+<p>Let's see how my above design responds to my rudimentary testbench (Yeah, I suck at writing good tests)</p>
+<h4>RD# active after RXF# assertion</h4>
+<p><img alt="RXF# to RD# delay" src="http://rohitksingh.in/images/ftdi-async-fifo/rxf_to_rd_delay.png" /></p>
+<p>From the image above, we see that time delay between <code>RXF#</code> going low to <code>RD#</code> driven low by code is <code>25ns</code>. Datasheet says it can be as low as <code>0ns</code>. For fastest data transfer rate, it should ideally be 0ns. In real-world, this delay will vary from 20ns to 30ns, which comes from our current VHDL code.</p>
+<h4>RD# asserted to reading data</h4>
+<p><img alt="RD# asserted to reading delay" src="http://rohitksingh.in/images/ftdi-async-fifo/rd_to_read.png" /></p>
+<p>From the above snip, we see that time delay from <code>RD#</code> driven low to actually reading data (check <code>state</code> and <code>reg[7:0]</code> signals) is <code>20ns</code>. Datasheet specified atleast <code>14ns</code> delay so we are good here also.</p>
+<h4>RD# pulse width</h4>
+<p><img alt="RD# pulse width" src="http://rohitksingh.in/images/ftdi-async-fifo/rd_pulse_width.png" /></p>
+<p>While datasheet says that minimum <code>RD#</code> pulse width should be <code>30ns</code>, we are quite safe here with pulse width of <code>40ns</code>.</p>
+<h4>Write data setup time</h4>
+<p><img alt="Write data setup time" src="http://rohitksingh.in/images/ftdi-async-fifo/write_data_setup_time.png" /></p>
+<p>We put tx-data on <code>DATA[7:0]</code> lines <code>10ns</code> before driving <code>WR#</code> low. So that satisfies datasheet's minimum requirement of <code>5ns</code>. We can notice here that <code>a5</code> was read, and we are transmitting its incremented value i.e, <code>a6</code>.</p>
+<h4>WR# pulse width</h4>
+<p><img alt="WR# pulse width" src="http://rohitksingh.in/images/ftdi-async-fifo/wr_pulse_width.png" /></p>
+<p>Same as in case of <code>RD#</code> signal, datasheet specifies minimum pulse width of <code>30ns</code> and we are again on safe side with pulse width of <code>40ns</code>.</p>
+<p>So, our VHDL design seems to be working well in simulation. Its time to try it on actual hardware!</p>
+<h2>Running On Hardware</h2>
+<p><em><strong>Note</strong>: All files related to this project are available in my github repository: <a href="https://github.com/rohit91/ftdi-async-fifo">https://github.com/rohit91/ftdi-async-fifo</a></em> </p>
+<p>Clone/download my repository, then open the .xise project file in Xilinx ISE and build it. You might need to modify constraints in .ucf file if your board/schematic is different. Program the FPGA with generated bitsteam and we are ready to test.</p>
+<p><img alt="Build project in Xilinx ISE" src="http://rohitksingh.in/images/ftdi-async-fifo/ise_build.png" /></p>
+<p><em>(No warnings, Yeah! That's very rare in Xilinx ISE :p )</em></p>
+<h3>Test Setup</h3>
+<p>We need some way of sending data from host PC to FTDI, and reading data received from FTDI on host PC. The FTDI-FPGA part is handled by our design running on the FPGA.</p>
+<p>There are many ways to do this on Linux and Windows. But, I'll go with my own setup.</p>
+<p>I'll use Linux, Ubuntu 14.04 to be precise. I'll use <code>Python</code> with <a href="https://pylibftdi.readthedocs.io/en/0.15.0/"><code>pylibftdi</code></a> library to send/receive data to/from FTDI. </p>
+<p>So, for this test setup, you'll need:
+1. Linux Host
+2. Python (already comes with most Linux distributions)
+3. <code>pylibftdi</code> library properly set up and working</p>
+<p>Using pylibftdi, it's just a simple, few-lines-of-code job to test our project! So let's fire up python!</p>
+<div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pylibftdi</span> <span class="kn">import</span> <span class="n">Driver</span><span class="p">,</span> <span class="n">Device</span>
+
+<span class="c1"># Get list of all FTDI devices</span>
+<span class="n">dev_list</span>  <span class="o">=</span> <span class="n">Driver</span><span class="p">()</span><span class="o">.</span><span class="n">list_devices</span><span class="p">()</span>
+
+<span class="c1"># Print all devices</span>
+<span class="k">for</span> <span class="n">device_</span> <span class="ow">in</span> <span class="n">dev_list</span><span class="p">:</span>
+    <span class="k">print</span> <span class="n">device_</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>(&#39;FTDI&#39;, &#39;Saturn Spartan 6 FPGA Module&#39;, &#39;FTZ17IRO&#39;)
+</pre></div>
+
+
+<p>Above code lists out all FTDI ICs detected by the <code>pylibftdi</code> library. We can see my Saturn board has been detected by it. </p>
+<p>Now let's open this device, write something to it and read back same number of bytes to test if our VHDL design for FTDI Asynchronous FIFO communication is working fine or not.</p>
+<div class="highlight"><pre><span></span><span class="c1"># Create Device instance: Channel B in binary mode</span>
+<span class="n">dev</span> <span class="o">=</span> <span class="n">Device</span><span class="p">(</span><span class="n">device_id</span><span class="o">=</span><span class="s2">&quot;FTZ17IRO&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="n">interface_select</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="c1"># Open the instantiated device</span>
+<span class="n">dev</span><span class="o">.</span><span class="n">open</span><span class="p">()</span>
+
+<span class="c1"># Write value 16 to FTDI over USB, returns number of bytes written</span>
+<span class="n">dev</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">bytearray</span><span class="p">([</span><span class="mi">16</span><span class="p">,]))</span>
+
+<span class="c1"># Read one byte</span>
+<span class="n">rx_data</span> <span class="o">=</span>  <span class="nb">bytearray</span><span class="p">(</span><span class="n">dev</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+
+<span class="c1"># Print the byte received. Should be 16+1 i.e, 17</span>
+<span class="k">print</span> <span class="n">rx_data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="c1"># Close device after use</span>
+<span class="n">dev</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>17
+</pre></div>
+
+
+<p>Yes! Our design is working! We sent 16 and received 17 as expected! Check the screenshot below for actual proof!
+<img alt="Simple Python test" src="http://rohitksingh.in/images/ftdi-async-fifo/python_simple_test.png" /></p>
+<h2>Performance &amp; Benchmarking</h2>
+<p>In the last section, we just did a simple test. We sent one byte, received one byte and verified whether the received byte was indeed incremented by one or not. But, this is not sufficient to prove the reliability of our design. </p>
+<p>We need to do more rigorous testing to prove that our design works reliably. In this section we will subject our design to much more data than just 1 byte! Let's see my simple benchmarking code.</p>
+<div class="highlight"><pre><span></span><span class="ch">#! /usr/bin/python</span>
+
+<span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">random</span>
+
+<span class="kn">from</span> <span class="nn">pylibftdi</span> <span class="kn">import</span> <span class="n">Driver</span><span class="p">,</span> <span class="n">Device</span>
+
+<span class="n">dev_list</span>  <span class="o">=</span> <span class="n">Driver</span><span class="p">()</span><span class="o">.</span><span class="n">list_devices</span><span class="p">()</span>
+<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">dev_list</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="k">print</span> <span class="s2">&quot;Following devices found:&quot;</span>
+<span class="k">for</span> <span class="n">device_</span> <span class="ow">in</span> <span class="n">dev_list</span><span class="p">:</span>
+    <span class="k">print</span> <span class="n">device_</span>
+
+<span class="n">dev</span> <span class="o">=</span> <span class="n">Device</span><span class="p">(</span><span class="n">device_id</span><span class="o">=</span><span class="s2">&quot;FTZ17IRO&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="n">interface_select</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">dev</span><span class="o">.</span><span class="n">open</span><span class="p">()</span>
+
+
+<span class="n">epochs</span> <span class="o">=</span> <span class="mi">1024</span><span class="o">*</span><span class="mi">10</span>
+<span class="n">BLOCK_LEN</span> <span class="o">=</span> <span class="mi">2048</span>
+<span class="n">tx_data</span> <span class="o">=</span> <span class="nb">bytearray</span><span class="p">([</span> <span class="n">random</span><span class="o">.</span><span class="n">randrange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">256</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">BLOCK_LEN</span><span class="p">)])</span>
+<span class="n">ts</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+<span class="k">while</span> <span class="n">epochs</span><span class="p">:</span>
+
+    <span class="n">dev</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">tx_data</span><span class="p">)</span>
+    <span class="n">rx_data</span> <span class="o">=</span> <span class="nb">bytearray</span><span class="p">(</span><span class="n">dev</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">BLOCK_LEN</span><span class="p">))</span>
+
+    <span class="c1">#print &quot;Epoch: {}&quot;.format(epochs) </span>
+    <span class="n">failed</span> <span class="o">=</span> <span class="bp">False</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">BLOCK_LEN</span><span class="p">):</span>
+      <span class="k">if</span> <span class="p">((</span><span class="n">tx_data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">%</span><span class="mi">256</span><span class="p">)</span> <span class="o">!=</span> <span class="n">rx_data</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span>
+        <span class="k">print</span> <span class="s2">&quot;Epoch: {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">epochs</span><span class="p">)</span> 
+        <span class="k">print</span> <span class="s2">&quot;[Test]: Data verification failed! , tx_data : &quot;</span><span class="p">,</span> <span class="n">tx_data</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="s2">&quot; =/= rx_data : &quot;</span><span class="p">,</span> <span class="n">rx_data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">failed</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="k">print</span> <span class="s2">&quot;Breaking...&quot;</span>
+        <span class="k">break</span>
+    <span class="k">if</span> <span class="n">failed</span><span class="p">:</span>
+        <span class="k">break</span>
+
+    <span class="n">epochs</span> <span class="o">-=</span> <span class="mi">1</span>
+
+<span class="n">dev</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="n">te</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+<span class="k">print</span> <span class="s2">&quot;Time {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">te</span><span class="o">-</span><span class="n">ts</span><span class="p">))</span>
+</pre></div>
+
+
+<p>This code will send a random generated block of data of length <code>BLOCK_LEN</code> total of <code>10240</code> times and verify whether we have received expected data or not. I've chosen BLOCK_LEN to be <code>2048</code>, so in total we are sending 20MB (Mega Bytes) of data to the FPGA, which is quite a large amount! We are also receiving <code>20MB</code> of data and verifying its correctness. We will also measure the time it takes to complete the whole operation.</p>
+<p>Code runs successfully without any verification error! And we get the following output:</p>
+<div class="highlight"><pre><span></span>Following devices found:
+(&#39;FTDI&#39;, &#39;Saturn Spartan 6 FPGA Module&#39;, &#39;FTZ17IRO&#39;)
+Time 10.9798371792
+</pre></div>
+
+
+<p><img alt="Single Benchmark" src="http://rohitksingh.in/images/ftdi-async-fifo/benchmark_single.png" /></p>
+<p>That's around <code>1.8 MB/s</code> transfer rate considering only transmitted data! If we take into account data in both directions, then transfer rate is actually twice of that, i.e, around <code>3.6 MB/s</code>! That's quite satisfactory performance for me. We can improve it further by using C/C++ interface and squeezing the VHDL code further! Nevertheless, I'm very much satisfied with this transfer rate! :)</p>
+<h2>Conclusion</h2>
+<p>This project was quite interesting to me, as I wanted to see for myself how can I use FTDI's Asynchronous FIFO interface. In this article, we went into some basic theory, then designed our FSM/algorithm based on that theory, implemented it in VHDL, simulated it, and finally ran it on hardware. We did proof-of-concept tests and benchmarks on our design. And, yeah we achieved <code>1.8 MB/s</code> transfer rate! I hope my readers also find this article interesting! :)</p>
+<h2>References</h2>
+<ol>
+<li><a href="http://www.eevblog.com/forum/microcontrollers/ftdi-ft232h-in-synchronous-fifo-questions/msg671602/#msg671602">http://www.eevblog.com/forum/microcontrollers/ftdi-ft232h-in-synchronous-fifo-questions/msg671602/#msg671602</a></li>
+<li><a href="http://www.ftdichip.com/Support/Documents/DataSheets/ICs/DS_FT2232H.pdf">http://www.ftdichip.com/Support/Documents/DataSheets/ICs/DS_FT2232H.pdf</a></li>
+</ol>
+  </div>
+  <div class="tag-cloud">
+    <p>
+      <a href="http://rohitksingh.in/tag/ftdi.html">ftdi</a>
+      <a href="http://rohitksingh.in/tag/ft2232.html">ft2232</a>
+      <a href="http://rohitksingh.in/tag/fifo.html">fifo</a>
+      <a href="http://rohitksingh.in/tag/usb.html">usb</a>
+      <a href="http://rohitksingh.in/tag/vhdl.html">vhdl</a>
+      <a href="http://rohitksingh.in/tag/verilog.html">verilog</a>
+      <a href="http://rohitksingh.in/tag/fpga.html">fpga</a>
+      <a href="http://rohitksingh.in/tag/asynchronous-fifo.html">asynchronous fifo</a>
+      <a href="http://rohitksingh.in/tag/migen.html">migen</a>
+      <a href="http://rohitksingh.in/tag/electronics.html">electronics</a>
+      <a href="http://rohitksingh.in/tag/hardware.html">hardware</a>
+    </p>
+  </div>
+</article>
+
+    <footer>
+<p>
+  &copy; Rohit Singh 2016 - This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>
+</p>
+<p>Built using <a href="http://getpelican.com" target="_blank">Pelican</a> - <a href="https://github.com/alexandrevicenzi/flex" target="_blank">Flex</a> theme by <a href="http://alexandrevicenzi.com" target="_blank">Alexandre Vicenzi</a></p><p>
+  <a rel="license"
+     href="http://creativecommons.org/licenses/by-sa/4.0/"
+     target="_blank">
+    <img alt="Creative Commons License"
+         title="Creative Commons License"
+         style="border-width:0"
+         src="https://i.creativecommons.org/l/by-sa/4.0/80x15.png"
+         width="80"
+         height="15"/>
+  </a>
+</p>    </footer>
+  </main>
+
+
+
+
+
+<script type="application/ld+json">
+{
+  "@context" : "http://schema.org",
+  "@type" : "Blog",
+  "name": " Rohit's Blog ",
+  "url" : "http://rohitksingh.in",
+  "image": "",
+  "description": "Rohit Singh's Thoughts, Writings, Logs and Tinkerings"
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "http://schema.org",
+  "@type": "BlogPosting",
+  "name": "FTDI Asynchronous FIFO USB Communication With FPGA",
+  "headline": "FTDI Asynchronous FIFO USB Communication With FPGA",
+  "datePublished": "2016-08-20 10:10:00+05:30",
+  "dateModified": "2016-08-31 23:25:00+05:30",
+  "author": {
+    "@type": "Person",
+    "name": "Rohit",
+    "url": "http://rohitksingh.in/author/rohit.html"
+  },
+  "image": "{{ SITEURL }}/{{ THEME_STATIC_DIR }}/img/profile.png",
+  "url": "http://rohitksingh.in/ftdi-asynchronous-fifo-usb-communication-with-fpga.html",
+  "description": "In this article, we walk through technical details of FTDI's Asynchronous FIFO interface which is necessary for this project, then we will proceed to the designing part where we design the FSM (or, algorithm in software parlance), and after that we simply implement our designed FSM in VHDL. Once VHDL coding is done, we verify our design through simulation. Finally, we test our design on hardware and benchmark the performace i.e, the transfer rate achieved."
+}
+</script></body>
+</html>

@@ -28,15 +28,23 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
-    <meta name="author" content="Rohit Singh" />
-    <meta name="description" content="Rohit Singh's Thoughts, Writings, Logs and Tinkerings" />
+<meta name="author" content="Rohit" />
+<meta name="description" content="Finally, after ages of procrastination, I've finally begun moving my blog to Pelican, a python based static site generator" />
+<meta name="keywords" content="python, pelican, blog">
 <meta property="og:site_name" content="Rohit's Blog"/>
-<meta property="og:type" content="blog"/>
-<meta property="og:title" content="Rohit's Blog"/>
-<meta property="og:description" content="Rohit Singh's Thoughts, Writings, Logs and Tinkerings"/>
+<meta property="og:title" content="Migrating blog to Pelican"/>
+<meta property="og:description" content="Finally, after ages of procrastination, I've finally begun moving my blog to Pelican, a python based static site generator"/>
 <meta property="og:locale" content="en_US"/>
-<meta property="og:url" content="http://rohitksingh.in"/>
-
+<meta property="og:url" content="http://rohitksingh.in/migrating-blog-to-pelican.html"/>
+<meta property="og:type" content="article"/>
+<meta property="article:published_time" content="2016-08-15 23:40:00+05:30"/>
+<meta property="article:modified_time" content="2016-08-31 23:40:00+05:30"/>
+<meta property="article:author" content="http://rohitksingh.in/author/rohit.html">
+<meta property="article:section" content="Software"/>
+<meta property="article:tag" content="python"/>
+<meta property="article:tag" content="pelican"/>
+<meta property="article:tag" content="blog"/>
+<meta property="og:image" content="">
   <title>Rohit's Blog</title>
 </head>
 <body>
@@ -72,34 +80,21 @@
 
 <article>
   <header>
-    <h2><a href="http://rohitksingh.in/ftdi-asynchronous-fifo-usb-communication-with-fpga.html">FTDI Asynchronous FIFO USB Communication With FPGA</a></h2>
-    <p>
-      Posted on Sat 20 August 2016 in <a href="http://rohitksingh.in/category/hardware.html">Hardware</a>
-      &#8226; Tagged with
-      <a href="http://rohitksingh.in/tag/ftdi.html">ftdi</a>,      <a href="http://rohitksingh.in/tag/ft2232.html">ft2232</a>,      <a href="http://rohitksingh.in/tag/fifo.html">fifo</a>,      <a href="http://rohitksingh.in/tag/usb.html">usb</a>,      <a href="http://rohitksingh.in/tag/vhdl.html">vhdl</a>,      <a href="http://rohitksingh.in/tag/verilog.html">verilog</a>,      <a href="http://rohitksingh.in/tag/fpga.html">fpga</a>,      <a href="http://rohitksingh.in/tag/asynchronous-fifo.html">asynchronous fifo</a>,      <a href="http://rohitksingh.in/tag/migen.html">migen</a>,      <a href="http://rohitksingh.in/tag/electronics.html">electronics</a>,      <a href="http://rohitksingh.in/tag/hardware.html">hardware</a>    </p>
+    <h1 id="migrating-blog-to-pelican">Migrating blog to Pelican</h1>
+    <p>Posted on Mon 15 August 2016 in <a href="http://rohitksingh.in/category/software.html">Software</a></p>
   </header>
+  
   <div>
-      <p>In this article, we walk through technical details of FTDI's Asynchronous FIFO interface which is necessary for this project, then we will proceed to the designing part where we design the FSM (or, algorithm in software parlance), and after that we simply implement our designed FSM in VHDL. Once VHDL coding is done, we verify our design through simulation. Finally, we test our design on hardware and benchmark the performace i.e, the transfer rate achieved.</p>
-      <a class="btn" href="http://rohitksingh.in/ftdi-asynchronous-fifo-usb-communication-with-fpga.html#ftdi-asynchronous-fifo-usb-communication-with-fpga">Continue reading</a>
+    
   </div>
-  <hr />
-</article>
-<article>
-  <header>
-    <h2><a href="http://rohitksingh.in/migrating-blog-to-pelican.html">Migrating blog to Pelican</a></h2>
+  <div class="tag-cloud">
     <p>
-      Posted on Mon 15 August 2016 in <a href="http://rohitksingh.in/category/software.html">Software</a>
-      &#8226; Tagged with
-      <a href="http://rohitksingh.in/tag/python.html">python</a>,      <a href="http://rohitksingh.in/tag/pelican.html">pelican</a>,      <a href="http://rohitksingh.in/tag/blog.html">blog</a>    </p>
-  </header>
-  <div>
-      <p>Finally, after ages of procrastination, I've finally begun moving my blog to <a href="http://docs.getpelican.com/en/3.6.3/">Pelican</a>, a python based static site generator</p>
-      <a class="btn" href="http://rohitksingh.in/migrating-blog-to-pelican.html#migrating-blog-to-pelican">Continue reading</a>
+      <a href="http://rohitksingh.in/tag/python.html">python</a>
+      <a href="http://rohitksingh.in/tag/pelican.html">pelican</a>
+      <a href="http://rohitksingh.in/tag/blog.html">blog</a>
+    </p>
   </div>
 </article>
-
-  <div class="pagination">
-  </div>
 
     <footer>
 <p>
@@ -133,5 +128,22 @@
   "description": "Rohit Singh's Thoughts, Writings, Logs and Tinkerings"
 }
 </script>
-</body>
+<script type="application/ld+json">
+{
+  "@context": "http://schema.org",
+  "@type": "BlogPosting",
+  "name": "Migrating blog to Pelican",
+  "headline": "Migrating blog to Pelican",
+  "datePublished": "2016-08-15 23:40:00+05:30",
+  "dateModified": "2016-08-31 23:40:00+05:30",
+  "author": {
+    "@type": "Person",
+    "name": "Rohit",
+    "url": "http://rohitksingh.in/author/rohit.html"
+  },
+  "image": "{{ SITEURL }}/{{ THEME_STATIC_DIR }}/img/profile.png",
+  "url": "http://rohitksingh.in/migrating-blog-to-pelican.html",
+  "description": "Finally, after ages of procrastination, I've finally begun moving my blog to Pelican, a python based static site generator"
+}
+</script></body>
 </html>
