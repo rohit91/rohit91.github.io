@@ -3,14 +3,14 @@
 <head>
   <link href='//fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,700,400italic' rel='stylesheet' type='text/css'>
 
-    <link rel="stylesheet/less" type="text/css" href="http://rohitksingh.in/theme/stylesheet/style.less">
+    <link rel="stylesheet/less" type="text/css" href="https://rohitksingh.in/theme/stylesheet/style.less">
     <script src="//cdnjs.cloudflare.com/ajax/libs/less.js/2.5.1/less.min.js" type="text/javascript"></script>
 
-  <link rel="stylesheet" type="text/css" href="http://rohitksingh.in/theme/pygments/default.min.css">
-  <link rel="stylesheet" type="text/css" href="http://rohitksingh.in/theme/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" type="text/css" href="https://rohitksingh.in/theme/pygments/default.min.css">
+  <link rel="stylesheet" type="text/css" href="https://rohitksingh.in/theme/font-awesome/css/font-awesome.min.css">
 
 
-    <link href="http://rohitksingh.in/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Rohit's Blog Atom">
+    <link href="https://rohitksingh.in/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Rohit's Blog Atom">
 
 
 
@@ -35,11 +35,11 @@
 <meta property="og:title" content="FTDI Asynchronous FIFO USB Communication With FPGA"/>
 <meta property="og:description" content="In this article, we walk through technical details of FTDI's Asynchronous FIFO interface which is necessary for this project, then we will proceed to the designing part where we design the FSM (or, algorithm in software parlance), and after that we simply implement our designed FSM in VHDL. Once VHDL coding is done, we verify our design through simulation. Finally, we test our design on hardware and benchmark the performace i.e, the transfer rate achieved."/>
 <meta property="og:locale" content="en_US"/>
-<meta property="og:url" content="http://rohitksingh.in/ftdi-asynchronous-fifo-usb-communication-with-fpga.html"/>
+<meta property="og:url" content="https://rohitksingh.in/ftdi-asynchronous-fifo-usb-communication-with-fpga.html"/>
 <meta property="og:type" content="article"/>
 <meta property="article:published_time" content="2016-08-20 10:10:00+05:30"/>
 <meta property="article:modified_time" content="2016-08-31 23:25:00+05:30"/>
-<meta property="article:author" content="http://rohitksingh.in/author/rohit.html">
+<meta property="article:author" content="https://rohitksingh.in/author/rohit.html">
 <meta property="article:section" content="Hardware"/>
 <meta property="article:tag" content="ftdi"/>
 <meta property="article:tag" content="ft2232"/>
@@ -58,20 +58,20 @@
 <body>
   <aside>
     <div>
-      <a href="http://rohitksingh.in">
-        <img src="http://rohitksingh.in/theme/img/profile.png" alt="Rohit Singh" title="Rohit Singh">
+      <a href="https://rohitksingh.in">
+        <img src="https://rohitksingh.in/theme/img/profile.png" alt="Rohit Singh" title="Rohit Singh">
       </a>
-      <h1><a href="http://rohitksingh.in">Rohit Singh</a></h1>
+      <h1><a href="https://rohitksingh.in">Rohit Singh</a></h1>
 <p>Scientist . Engineer . Researcher . Designer . Lover . Dreamer . Artist . Perfect</p>      <nav>
         <ul class="list">
-          <li><a href="http://rohitksingh.in" target="_blank">portfolio</a></li>
-          <li><a href="http://rohitksingh.in" target="_blank">stories</a></li>
-          <li><a href="http://rohitksingh.in" target="_blank">about</a></li>
+          <li><a href="https://rohitksingh.in" target="_blank">portfolio</a></li>
+          <li><a href="https://rohitksingh.in" target="_blank">stories</a></li>
+          <li><a href="https://rohitksingh.in" target="_blank">about</a></li>
         </ul>
       </nav>
       <ul class="social">
         <li><a class="sc-linkedin" href="https://www.linkedin.com/in/rohit-kumar-singh" target="_blank"><i class="fa fa-linkedin"></i></a></li>
-        <li><a class="sc-github" href="https://github.com/rohit91" target="_blank"><i class="fa fa-github"></i></a></li>
+        <li><a class="sc-github" href="https://github.com/rohitk-singh" target="_blank"><i class="fa fa-github"></i></a></li>
         <li><a class="sc-twitter" href="https://twitter.com/RohitK_Singh" target="_blank"><i class="fa fa-twitter"></i></a></li>
         <li><a class="sc-rss" href="//rohitksingh.in/feeds/all.atom.xml" target="_blank"><i class="fa fa-rss"></i></a></li>
       </ul>
@@ -79,17 +79,17 @@
   </aside>
   <main>
     <nav>
-      <a href="http://rohitksingh.in">Home</a>
+      <a href="https://rohitksingh.in">Home</a>
       <a href="/archives.html">Archives</a>
       <a href="/categories.html">Categories</a>
       <a href="/tags.html">Tags</a>
-      <a href="http://rohitksingh.in/feeds/all.atom.xml">Atom</a>
+      <a href="https://rohitksingh.in/feeds/all.atom.xml">Atom</a>
     </nav>
 
 <article>
   <header>
     <h1 id="ftdi-asynchronous-fifo-usb-communication-with-fpga">FTDI Asynchronous FIFO USB Communication With FPGA</h1>
-    <p>Posted on Sat 20 August 2016 in <a href="http://rohitksingh.in/category/hardware.html">Hardware</a></p>
+    <p>Posted on Sat 20 August 2016 in <a href="https://rohitksingh.in/category/hardware.html">Hardware</a></p>
   </header>
   
   <div>
@@ -148,11 +148,11 @@
 </tbody>
 </table>
 <p><strong>Read Timing Diagram:</strong> 
-<img alt="Read" src="http://rohitksingh.in/images/ftdi-async-fifo/read_timing_diagram.png" /></p>
+<img alt="Read" src="https://rohitksingh.in/images/ftdi-async-fifo/read_timing_diagram.png" /></p>
 <p><strong>Write Timing Diagram:</strong>
-<img alt="Write" src="http://rohitksingh.in/images/ftdi-async-fifo/write_timing_diagram.png" /></p>
+<img alt="Write" src="https://rohitksingh.in/images/ftdi-async-fifo/write_timing_diagram.png" /></p>
 <p><strong>Timing Parameters:</strong>
-<img alt="Timings" src="http://rohitksingh.in/images/ftdi-async-fifo/timing_parameters.png" /></p>
+<img alt="Timings" src="https://rohitksingh.in/images/ftdi-async-fifo/timing_parameters.png" /></p>
 <p><em>(All images above are from FT2232H Datasheet)</em></p>
 <h2>Design</h2>
 <hr />
@@ -231,7 +231,7 @@
 </table>
 <p><strong>IMPORTANT</strong>: <strong>Do not</strong> check for falling edge in above FSM! Instead, check for level. <code>RXF</code> and <code>TXE</code> might have already had their falling edge before you check for them, so your FSM gets stuck in IDLE state forever, because those <code>RXF</code> and <code>TXE</code> will never go high until you read/write but your code won't read/write since it is still in <code>IDLE</code> state waiting for falling edge which has already occurred and which won't occur again unless a read/write transaction is made! I initially made this same mistake, and most of the times my design would work but randomly fail after I would have transferred some number of bytes. It took sometime to figure out this bug!</p>
 <h3>Code</h3>
-<p><em><strong>Note</strong>: All files related to this project are available in my github repository: <a href="https://github.com/rohit91/ftdi-async-fifo">https://github.com/rohit91/ftdi-async-fifo</a></em> </p>
+<p><em><strong>Note</strong>: All files related to this project are available in my github repository: <a href="https://github.com/rohitk-singh/ftdi-async-fifo">https://github.com/rohitk-singh/ftdi-async-fifo</a></em> </p>
 <h4>VHDL</h4>
 <div class="highlight"><pre><span></span><span class="c1">--------------------------------------------------------------------------------</span>
 <span class="c1">-- Author  : Rohit Singh</span>
@@ -363,25 +363,25 @@
 <h2>Simulation</h2>
 <p>Let's see how my above design responds to my rudimentary testbench (Yeah, I suck at writing good tests)</p>
 <h4>RD# active after RXF# assertion</h4>
-<p><img alt="RXF# to RD# delay" src="http://rohitksingh.in/images/ftdi-async-fifo/rxf_to_rd_delay.png" /></p>
+<p><img alt="RXF# to RD# delay" src="https://rohitksingh.in/images/ftdi-async-fifo/rxf_to_rd_delay.png" /></p>
 <p>From the image above, we see that time delay between <code>RXF#</code> going low to <code>RD#</code> driven low by code is <code>25ns</code>. Datasheet says it can be as low as <code>0ns</code>. For fastest data transfer rate, it should ideally be 0ns. In real-world, this delay will vary from 20ns to 30ns, which comes from our current VHDL code.</p>
 <h4>RD# asserted to reading data</h4>
-<p><img alt="RD# asserted to reading delay" src="http://rohitksingh.in/images/ftdi-async-fifo/rd_to_read.png" /></p>
+<p><img alt="RD# asserted to reading delay" src="https://rohitksingh.in/images/ftdi-async-fifo/rd_to_read.png" /></p>
 <p>From the above snip, we see that time delay from <code>RD#</code> driven low to actually reading data (check <code>state</code> and <code>reg[7:0]</code> signals) is <code>20ns</code>. Datasheet specified atleast <code>14ns</code> delay so we are good here also.</p>
 <h4>RD# pulse width</h4>
-<p><img alt="RD# pulse width" src="http://rohitksingh.in/images/ftdi-async-fifo/rd_pulse_width.png" /></p>
+<p><img alt="RD# pulse width" src="https://rohitksingh.in/images/ftdi-async-fifo/rd_pulse_width.png" /></p>
 <p>While datasheet says that minimum <code>RD#</code> pulse width should be <code>30ns</code>, we are quite safe here with pulse width of <code>40ns</code>.</p>
 <h4>Write data setup time</h4>
-<p><img alt="Write data setup time" src="http://rohitksingh.in/images/ftdi-async-fifo/write_data_setup_time.png" /></p>
+<p><img alt="Write data setup time" src="https://rohitksingh.in/images/ftdi-async-fifo/write_data_setup_time.png" /></p>
 <p>We put tx-data on <code>DATA[7:0]</code> lines <code>10ns</code> before driving <code>WR#</code> low. So that satisfies datasheet's minimum requirement of <code>5ns</code>. We can notice here that <code>a5</code> was read, and we are transmitting its incremented value i.e, <code>a6</code>.</p>
 <h4>WR# pulse width</h4>
-<p><img alt="WR# pulse width" src="http://rohitksingh.in/images/ftdi-async-fifo/wr_pulse_width.png" /></p>
+<p><img alt="WR# pulse width" src="https://rohitksingh.in/images/ftdi-async-fifo/wr_pulse_width.png" /></p>
 <p>Same as in case of <code>RD#</code> signal, datasheet specifies minimum pulse width of <code>30ns</code> and we are again on safe side with pulse width of <code>40ns</code>.</p>
 <p>So, our VHDL design seems to be working well in simulation. Its time to try it on actual hardware!</p>
 <h2>Running On Hardware</h2>
-<p><em><strong>Note</strong>: All files related to this project are available in my github repository: <a href="https://github.com/rohit91/ftdi-async-fifo">https://github.com/rohit91/ftdi-async-fifo</a></em> </p>
+<p><em><strong>Note</strong>: All files related to this project are available in my github repository: <a href="https://github.com/rohitk-singh/ftdi-async-fifo">https://github.com/rohitk-singh/ftdi-async-fifo</a></em> </p>
 <p>Clone/download my repository, then open the .xise project file in Xilinx ISE and build it. You might need to modify constraints in .ucf file if your board/schematic is different. Program the FPGA with generated bitsteam and we are ready to test.</p>
-<p><img alt="Build project in Xilinx ISE" src="http://rohitksingh.in/images/ftdi-async-fifo/ise_build.png" /></p>
+<p><img alt="Build project in Xilinx ISE" src="https://rohitksingh.in/images/ftdi-async-fifo/ise_build.png" /></p>
 <p><em>(No warnings, Yeah! That's very rare in Xilinx ISE :p )</em></p>
 <h3>Test Setup</h3>
 <p>We need some way of sending data from host PC to FTDI, and reading data received from FTDI on host PC. The FTDI-FPGA part is handled by our design running on the FPGA.</p>
@@ -434,7 +434,7 @@
 
 
 <p>Yes! Our design is working! We sent 16 and received 17 as expected! Check the screenshot below for actual proof!
-<img alt="Simple Python test" src="http://rohitksingh.in/images/ftdi-async-fifo/python_simple_test.png" /></p>
+<img alt="Simple Python test" src="https://rohitksingh.in/images/ftdi-async-fifo/python_simple_test.png" /></p>
 <h2>Performance &amp; Benchmarking</h2>
 <p>In the last section, we just did a simple test. We sent one byte, received one byte and verified whether the received byte was indeed incremented by one or not. But, this is not sufficient to prove the reliability of our design. </p>
 <p>We need to do more rigorous testing to prove that our design works reliably. In this section we will subject our design to much more data than just 1 byte! Let's see my simple benchmarking code.</p>
@@ -493,40 +493,40 @@ Time 10.9798371792
 </pre></div>
 
 
-<p><img alt="Single Benchmark" src="http://rohitksingh.in/images/ftdi-async-fifo/benchmark_single.png" /></p>
+<p><img alt="Single Benchmark" src="https://rohitksingh.in/images/ftdi-async-fifo/benchmark_single.png" /></p>
 <p>That's around <code>1.8 MB/s</code> transfer rate considering only transmitted data! If we take into account data in both directions, then transfer rate is actually twice of that, i.e, around <code>3.6 MB/s</code>! That's quite satisfactory performance for me. We can improve it further by using C/C++ interface and squeezing the VHDL code further! Nevertheless, I'm very much satisfied with this transfer rate! :)</p>
 <h2>Conclusion</h2>
 <p>This project was quite interesting to me, as I wanted to see for myself how can I use FTDI's Asynchronous FIFO interface. In this article, we went into some basic theory, then designed our FSM/algorithm based on that theory, implemented it in VHDL, simulated it, and finally ran it on hardware. We did proof-of-concept tests and benchmarks on our design. And, yeah we achieved <code>1.8 MB/s</code> transfer rate! I hope my readers also find this article interesting! :)</p>
 <h2>References</h2>
 <ol>
-<li><a href="http://www.eevblog.com/forum/microcontrollers/ftdi-ft232h-in-synchronous-fifo-questions/msg671602/#msg671602">http://www.eevblog.com/forum/microcontrollers/ftdi-ft232h-in-synchronous-fifo-questions/msg671602/#msg671602</a></li>
-<li><a href="http://www.ftdichip.com/Support/Documents/DataSheets/ICs/DS_FT2232H.pdf">http://www.ftdichip.com/Support/Documents/DataSheets/ICs/DS_FT2232H.pdf</a></li>
+<li><a href="https://www.eevblog.com/forum/microcontrollers/ftdi-ft232h-in-synchronous-fifo-questions/msg671602/#msg671602">https://www.eevblog.com/forum/microcontrollers/ftdi-ft232h-in-synchronous-fifo-questions/msg671602/#msg671602</a></li>
+<li><a href="https://www.ftdichip.com/Support/Documents/DataSheets/ICs/DS_FT2232H.pdf">https://www.ftdichip.com/Support/Documents/DataSheets/ICs/DS_FT2232H.pdf</a></li>
 </ol>
   </div>
   <div class="tag-cloud">
     <p>
-      <a href="http://rohitksingh.in/tag/ftdi.html">ftdi</a>
-      <a href="http://rohitksingh.in/tag/ft2232.html">ft2232</a>
-      <a href="http://rohitksingh.in/tag/fifo.html">fifo</a>
-      <a href="http://rohitksingh.in/tag/usb.html">usb</a>
-      <a href="http://rohitksingh.in/tag/vhdl.html">vhdl</a>
-      <a href="http://rohitksingh.in/tag/verilog.html">verilog</a>
-      <a href="http://rohitksingh.in/tag/fpga.html">fpga</a>
-      <a href="http://rohitksingh.in/tag/asynchronous-fifo.html">asynchronous fifo</a>
-      <a href="http://rohitksingh.in/tag/migen.html">migen</a>
-      <a href="http://rohitksingh.in/tag/electronics.html">electronics</a>
-      <a href="http://rohitksingh.in/tag/hardware.html">hardware</a>
+      <a href="https://rohitksingh.in/tag/ftdi.html">ftdi</a>
+      <a href="https://rohitksingh.in/tag/ft2232.html">ft2232</a>
+      <a href="https://rohitksingh.in/tag/fifo.html">fifo</a>
+      <a href="https://rohitksingh.in/tag/usb.html">usb</a>
+      <a href="https://rohitksingh.in/tag/vhdl.html">vhdl</a>
+      <a href="https://rohitksingh.in/tag/verilog.html">verilog</a>
+      <a href="https://rohitksingh.in/tag/fpga.html">fpga</a>
+      <a href="https://rohitksingh.in/tag/asynchronous-fifo.html">asynchronous fifo</a>
+      <a href="https://rohitksingh.in/tag/migen.html">migen</a>
+      <a href="https://rohitksingh.in/tag/electronics.html">electronics</a>
+      <a href="https://rohitksingh.in/tag/hardware.html">hardware</a>
     </p>
   </div>
 </article>
 
     <footer>
 <p>
-  &copy; Rohit Singh 2016 - This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>
+  &copy; Rohit Singh 2016 - This work is licensed under a <a rel="license" href="https://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>
 </p>
-<p>Built using <a href="http://getpelican.com" target="_blank">Pelican</a> - <a href="https://github.com/alexandrevicenzi/flex" target="_blank">Flex</a> theme by <a href="http://alexandrevicenzi.com" target="_blank">Alexandre Vicenzi</a></p><p>
+<p>Built using <a href="https://getpelican.com" target="_blank">Pelican</a> - <a href="https://github.com/alexandrevicenzi/flex" target="_blank">Flex</a> theme by <a href="https://alexandrevicenzi.com" target="_blank">Alexandre Vicenzi</a></p><p>
   <a rel="license"
-     href="http://creativecommons.org/licenses/by-sa/4.0/"
+     href="https://creativecommons.org/licenses/by-sa/4.0/"
      target="_blank">
     <img alt="Creative Commons License"
          title="Creative Commons License"
@@ -544,17 +544,17 @@ Time 10.9798371792
 
 <script type="application/ld+json">
 {
-  "@context" : "http://schema.org",
+  "@context" : "https://schema.org",
   "@type" : "Blog",
   "name": " Rohit's Blog ",
-  "url" : "http://rohitksingh.in",
+  "url" : "https://rohitksingh.in",
   "image": "",
   "description": "Rohit Singh's Thoughts, Writings, Logs and Tinkerings"
 }
 </script>
 <script type="application/ld+json">
 {
-  "@context": "http://schema.org",
+  "@context": "https://schema.org",
   "@type": "BlogPosting",
   "name": "FTDI Asynchronous FIFO USB Communication With FPGA",
   "headline": "FTDI Asynchronous FIFO USB Communication With FPGA",
@@ -563,10 +563,10 @@ Time 10.9798371792
   "author": {
     "@type": "Person",
     "name": "Rohit",
-    "url": "http://rohitksingh.in/author/rohit.html"
+    "url": "https://rohitksingh.in/author/rohit.html"
   },
   "image": "{{ SITEURL }}/{{ THEME_STATIC_DIR }}/img/profile.png",
-  "url": "http://rohitksingh.in/ftdi-asynchronous-fifo-usb-communication-with-fpga.html",
+  "url": "https://rohitksingh.in/ftdi-asynchronous-fifo-usb-communication-with-fpga.html",
   "description": "In this article, we walk through technical details of FTDI's Asynchronous FIFO interface which is necessary for this project, then we will proceed to the designing part where we design the FSM (or, algorithm in software parlance), and after that we simply implement our designed FSM in VHDL. Once VHDL coding is done, we verify our design through simulation. Finally, we test our design on hardware and benchmark the performace i.e, the transfer rate achieved."
 }
 </script></body>

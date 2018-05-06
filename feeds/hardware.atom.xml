@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>Rohit's Blog</title><link href="http://rohitksingh.in/" rel="alternate"></link><link href="http://rohitksingh.in/feeds/hardware.atom.xml" rel="self"></link><id>http://rohitksingh.in/</id><updated>2016-08-31T23:25:00+05:30</updated><entry><title>FTDI Asynchronous FIFO USB Communication With FPGA</title><link href="http://rohitksingh.in/ftdi-asynchronous-fifo-usb-communication-with-fpga.html" rel="alternate"></link><published>2016-08-31T23:25:00+05:30</published><author><name>Rohit</name></author><id>tag:rohitksingh.in,2016-08-20:ftdi-asynchronous-fifo-usb-communication-with-fpga.html</id><summary type="html">&lt;h2&gt;Introduction&lt;/h2&gt;
+<feed xmlns="https://www.w3.org/2005/Atom"><title>Rohit's Blog</title><link href="https://rohitksingh.in/" rel="alternate"></link><link href="https://rohitksingh.in/feeds/hardware.atom.xml" rel="self"></link><id>https://rohitksingh.in/</id><updated>2016-08-31T23:25:00+05:30</updated><entry><title>FTDI Asynchronous FIFO USB Communication With FPGA</title><link href="https://rohitksingh.in/ftdi-asynchronous-fifo-usb-communication-with-fpga.html" rel="alternate"></link><published>2016-08-31T23:25:00+05:30</published><author><name>Rohit</name></author><id>tag:rohitksingh.in,2016-08-20:ftdi-asynchronous-fifo-usb-communication-with-fpga.html</id><summary type="html">&lt;h2&gt;Introduction&lt;/h2&gt;
 &lt;p&gt;I've had a Saturn board lying around for a long time. It's a nice board with &lt;strong&gt;Spartan 6&lt;/strong&gt; series &lt;strong&gt;LX9&lt;/strong&gt; FPGA in CSG324 package, &lt;strong&gt;512Mbits LPDDR&lt;/strong&gt; memory which can run at upto &lt;strong&gt;166MHz&lt;/strong&gt; and &lt;strong&gt;lots&lt;/strong&gt; of IOs. And it also has an &lt;strong&gt;FT2232H&lt;/strong&gt; IC on it. &lt;/p&gt;
 &lt;p&gt;FT2232H is an interesting chip from FTDI, the manufacturer of well known USB-Serial ICs. It has 2 independent serial/FIFO channels, &lt;strong&gt;Channel A&lt;/strong&gt; and &lt;strong&gt;Channel B&lt;/strong&gt;. Each of these channels can be configured into various modes like UART, FIFO, JTAG, SPI, I2C etc. For Saturn, Channel A of FT2232H is reserved for FPGA configuration and flash programming. Channel B is generally used by user for UART communication. One thing to point out is that in Saturn, the control bus of Channel A is brought out to header, so we can use it for whatever purpose we desire.&lt;/p&gt;
 &lt;p&gt;In this article, we walk through technical details of FTDI's Asynchronous FIFO interface which is necessary for this project, then we will proceed to the designing part where we design the FSM (or, algorithm in software parlance), and after that we simply implement our designed FSM in VHDL. Once VHDL coding is done, we verify our design through simulation. Finally, we test our design on hardware and benchmark the performace i.e, the transfer rate achieved.&lt;/p&gt;
@@ -54,11 +54,11 @@
 &lt;/tbody&gt;
 &lt;/table&gt;
 &lt;p&gt;&lt;strong&gt;Read Timing Diagram:&lt;/strong&gt; 
-&lt;img alt="Read" src="http://rohitksingh.in/images/ftdi-async-fifo/read_timing_diagram.png" /&gt;&lt;/p&gt;
+&lt;img alt="Read" src="https://rohitksingh.in/images/ftdi-async-fifo/read_timing_diagram.png" /&gt;&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;Write Timing Diagram:&lt;/strong&gt;
-&lt;img alt="Write" src="http://rohitksingh.in/images/ftdi-async-fifo/write_timing_diagram.png" /&gt;&lt;/p&gt;
+&lt;img alt="Write" src="https://rohitksingh.in/images/ftdi-async-fifo/write_timing_diagram.png" /&gt;&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;Timing Parameters:&lt;/strong&gt;
-&lt;img alt="Timings" src="http://rohitksingh.in/images/ftdi-async-fifo/timing_parameters.png" /&gt;&lt;/p&gt;
+&lt;img alt="Timings" src="https://rohitksingh.in/images/ftdi-async-fifo/timing_parameters.png" /&gt;&lt;/p&gt;
 &lt;p&gt;&lt;em&gt;(All images above are from FT2232H Datasheet)&lt;/em&gt;&lt;/p&gt;
 &lt;h2&gt;Design&lt;/h2&gt;
 &lt;hr /&gt;
@@ -137,7 +137,7 @@
 &lt;/table&gt;
 &lt;p&gt;&lt;strong&gt;IMPORTANT&lt;/strong&gt;: &lt;strong&gt;Do not&lt;/strong&gt; check for falling edge in above FSM! Instead, check for level. &lt;code&gt;RXF&lt;/code&gt; and &lt;code&gt;TXE&lt;/code&gt; might have already had their falling edge before you check for them, so your FSM gets stuck in IDLE state forever, because those &lt;code&gt;RXF&lt;/code&gt; and &lt;code&gt;TXE&lt;/code&gt; will never go high until you read/write but your code won't read/write since it is still in &lt;code&gt;IDLE&lt;/code&gt; state waiting for falling edge which has already occurred and which won't occur again unless a read/write transaction is made! I initially made this same mistake, and most of the times my design would work but randomly fail after I would have transferred some number of bytes. It took sometime to figure out this bug!&lt;/p&gt;
 &lt;h3&gt;Code&lt;/h3&gt;
-&lt;p&gt;&lt;em&gt;&lt;strong&gt;Note&lt;/strong&gt;: All files related to this project are available in my github repository: &lt;a href="https://github.com/rohit91/ftdi-async-fifo"&gt;https://github.com/rohit91/ftdi-async-fifo&lt;/a&gt;&lt;/em&gt; &lt;/p&gt;
+&lt;p&gt;&lt;em&gt;&lt;strong&gt;Note&lt;/strong&gt;: All files related to this project are available in my github repository: &lt;a href="https://github.com/rohitk-singh/ftdi-async-fifo"&gt;https://github.com/rohitk-singh/ftdi-async-fifo&lt;/a&gt;&lt;/em&gt; &lt;/p&gt;
 &lt;h4&gt;VHDL&lt;/h4&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="c1"&gt;--------------------------------------------------------------------------------&lt;/span&gt;
 &lt;span class="c1"&gt;-- Author  : Rohit Singh&lt;/span&gt;
@@ -269,25 +269,25 @@
 &lt;h2&gt;Simulation&lt;/h2&gt;
 &lt;p&gt;Let's see how my above design responds to my rudimentary testbench (Yeah, I suck at writing good tests)&lt;/p&gt;
 &lt;h4&gt;RD# active after RXF# assertion&lt;/h4&gt;
-&lt;p&gt;&lt;img alt="RXF# to RD# delay" src="http://rohitksingh.in/images/ftdi-async-fifo/rxf_to_rd_delay.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="RXF# to RD# delay" src="https://rohitksingh.in/images/ftdi-async-fifo/rxf_to_rd_delay.png" /&gt;&lt;/p&gt;
 &lt;p&gt;From the image above, we see that time delay between &lt;code&gt;RXF#&lt;/code&gt; going low to &lt;code&gt;RD#&lt;/code&gt; driven low by code is &lt;code&gt;25ns&lt;/code&gt;. Datasheet says it can be as low as &lt;code&gt;0ns&lt;/code&gt;. For fastest data transfer rate, it should ideally be 0ns. In real-world, this delay will vary from 20ns to 30ns, which comes from our current VHDL code.&lt;/p&gt;
 &lt;h4&gt;RD# asserted to reading data&lt;/h4&gt;
-&lt;p&gt;&lt;img alt="RD# asserted to reading delay" src="http://rohitksingh.in/images/ftdi-async-fifo/rd_to_read.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="RD# asserted to reading delay" src="https://rohitksingh.in/images/ftdi-async-fifo/rd_to_read.png" /&gt;&lt;/p&gt;
 &lt;p&gt;From the above snip, we see that time delay from &lt;code&gt;RD#&lt;/code&gt; driven low to actually reading data (check &lt;code&gt;state&lt;/code&gt; and &lt;code&gt;reg[7:0]&lt;/code&gt; signals) is &lt;code&gt;20ns&lt;/code&gt;. Datasheet specified atleast &lt;code&gt;14ns&lt;/code&gt; delay so we are good here also.&lt;/p&gt;
 &lt;h4&gt;RD# pulse width&lt;/h4&gt;
-&lt;p&gt;&lt;img alt="RD# pulse width" src="http://rohitksingh.in/images/ftdi-async-fifo/rd_pulse_width.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="RD# pulse width" src="https://rohitksingh.in/images/ftdi-async-fifo/rd_pulse_width.png" /&gt;&lt;/p&gt;
 &lt;p&gt;While datasheet says that minimum &lt;code&gt;RD#&lt;/code&gt; pulse width should be &lt;code&gt;30ns&lt;/code&gt;, we are quite safe here with pulse width of &lt;code&gt;40ns&lt;/code&gt;.&lt;/p&gt;
 &lt;h4&gt;Write data setup time&lt;/h4&gt;
-&lt;p&gt;&lt;img alt="Write data setup time" src="http://rohitksingh.in/images/ftdi-async-fifo/write_data_setup_time.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="Write data setup time" src="https://rohitksingh.in/images/ftdi-async-fifo/write_data_setup_time.png" /&gt;&lt;/p&gt;
 &lt;p&gt;We put tx-data on &lt;code&gt;DATA[7:0]&lt;/code&gt; lines &lt;code&gt;10ns&lt;/code&gt; before driving &lt;code&gt;WR#&lt;/code&gt; low. So that satisfies datasheet's minimum requirement of &lt;code&gt;5ns&lt;/code&gt;. We can notice here that &lt;code&gt;a5&lt;/code&gt; was read, and we are transmitting its incremented value i.e, &lt;code&gt;a6&lt;/code&gt;.&lt;/p&gt;
 &lt;h4&gt;WR# pulse width&lt;/h4&gt;
-&lt;p&gt;&lt;img alt="WR# pulse width" src="http://rohitksingh.in/images/ftdi-async-fifo/wr_pulse_width.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="WR# pulse width" src="https://rohitksingh.in/images/ftdi-async-fifo/wr_pulse_width.png" /&gt;&lt;/p&gt;
 &lt;p&gt;Same as in case of &lt;code&gt;RD#&lt;/code&gt; signal, datasheet specifies minimum pulse width of &lt;code&gt;30ns&lt;/code&gt; and we are again on safe side with pulse width of &lt;code&gt;40ns&lt;/code&gt;.&lt;/p&gt;
 &lt;p&gt;So, our VHDL design seems to be working well in simulation. Its time to try it on actual hardware!&lt;/p&gt;
 &lt;h2&gt;Running On Hardware&lt;/h2&gt;
-&lt;p&gt;&lt;em&gt;&lt;strong&gt;Note&lt;/strong&gt;: All files related to this project are available in my github repository: &lt;a href="https://github.com/rohit91/ftdi-async-fifo"&gt;https://github.com/rohit91/ftdi-async-fifo&lt;/a&gt;&lt;/em&gt; &lt;/p&gt;
+&lt;p&gt;&lt;em&gt;&lt;strong&gt;Note&lt;/strong&gt;: All files related to this project are available in my github repository: &lt;a href="https://github.com/rohitk-singh/ftdi-async-fifo"&gt;https://github.com/rohitk-singh/ftdi-async-fifo&lt;/a&gt;&lt;/em&gt; &lt;/p&gt;
 &lt;p&gt;Clone/download my repository, then open the .xise project file in Xilinx ISE and build it. You might need to modify constraints in .ucf file if your board/schematic is different. Program the FPGA with generated bitsteam and we are ready to test.&lt;/p&gt;
-&lt;p&gt;&lt;img alt="Build project in Xilinx ISE" src="http://rohitksingh.in/images/ftdi-async-fifo/ise_build.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="Build project in Xilinx ISE" src="https://rohitksingh.in/images/ftdi-async-fifo/ise_build.png" /&gt;&lt;/p&gt;
 &lt;p&gt;&lt;em&gt;(No warnings, Yeah! That's very rare in Xilinx ISE :p )&lt;/em&gt;&lt;/p&gt;
 &lt;h3&gt;Test Setup&lt;/h3&gt;
 &lt;p&gt;We need some way of sending data from host PC to FTDI, and reading data received from FTDI on host PC. The FTDI-FPGA part is handled by our design running on the FPGA.&lt;/p&gt;
@@ -340,7 +340,7 @@
 
 
 &lt;p&gt;Yes! Our design is working! We sent 16 and received 17 as expected! Check the screenshot below for actual proof!
-&lt;img alt="Simple Python test" src="http://rohitksingh.in/images/ftdi-async-fifo/python_simple_test.png" /&gt;&lt;/p&gt;
+&lt;img alt="Simple Python test" src="https://rohitksingh.in/images/ftdi-async-fifo/python_simple_test.png" /&gt;&lt;/p&gt;
 &lt;h2&gt;Performance &amp;amp; Benchmarking&lt;/h2&gt;
 &lt;p&gt;In the last section, we just did a simple test. We sent one byte, received one byte and verified whether the received byte was indeed incremented by one or not. But, this is not sufficient to prove the reliability of our design. &lt;/p&gt;
 &lt;p&gt;We need to do more rigorous testing to prove that our design works reliably. In this section we will subject our design to much more data than just 1 byte! Let's see my simple benchmarking code.&lt;/p&gt;
@@ -399,12 +399,12 @@ Time 10.9798371792
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;p&gt;&lt;img alt="Single Benchmark" src="http://rohitksingh.in/images/ftdi-async-fifo/benchmark_single.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="Single Benchmark" src="https://rohitksingh.in/images/ftdi-async-fifo/benchmark_single.png" /&gt;&lt;/p&gt;
 &lt;p&gt;That's around &lt;code&gt;1.8 MB/s&lt;/code&gt; transfer rate considering only transmitted data! If we take into account data in both directions, then transfer rate is actually twice of that, i.e, around &lt;code&gt;3.6 MB/s&lt;/code&gt;! That's quite satisfactory performance for me. We can improve it further by using C/C++ interface and squeezing the VHDL code further! Nevertheless, I'm very much satisfied with this transfer rate! :)&lt;/p&gt;
 &lt;h2&gt;Conclusion&lt;/h2&gt;
 &lt;p&gt;This project was quite interesting to me, as I wanted to see for myself how can I use FTDI's Asynchronous FIFO interface. In this article, we went into some basic theory, then designed our FSM/algorithm based on that theory, implemented it in VHDL, simulated it, and finally ran it on hardware. We did proof-of-concept tests and benchmarks on our design. And, yeah we achieved &lt;code&gt;1.8 MB/s&lt;/code&gt; transfer rate! I hope my readers also find this article interesting! :)&lt;/p&gt;
 &lt;h2&gt;References&lt;/h2&gt;
 &lt;ol&gt;
-&lt;li&gt;&lt;a href="http://www.eevblog.com/forum/microcontrollers/ftdi-ft232h-in-synchronous-fifo-questions/msg671602/#msg671602"&gt;http://www.eevblog.com/forum/microcontrollers/ftdi-ft232h-in-synchronous-fifo-questions/msg671602/#msg671602&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href="http://www.ftdichip.com/Support/Documents/DataSheets/ICs/DS_FT2232H.pdf"&gt;http://www.ftdichip.com/Support/Documents/DataSheets/ICs/DS_FT2232H.pdf&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://www.eevblog.com/forum/microcontrollers/ftdi-ft232h-in-synchronous-fifo-questions/msg671602/#msg671602"&gt;https://www.eevblog.com/forum/microcontrollers/ftdi-ft232h-in-synchronous-fifo-questions/msg671602/#msg671602&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://www.ftdichip.com/Support/Documents/DataSheets/ICs/DS_FT2232H.pdf"&gt;https://www.ftdichip.com/Support/Documents/DataSheets/ICs/DS_FT2232H.pdf&lt;/a&gt;&lt;/li&gt;
 &lt;/ol&gt;</summary><category term="ftdi"></category><category term="ft2232"></category><category term="fifo"></category><category term="usb"></category><category term="vhdl"></category><category term="verilog"></category><category term="fpga"></category><category term="asynchronous fifo"></category><category term="migen"></category><category term="electronics"></category><category term="hardware"></category></entry></feed>
