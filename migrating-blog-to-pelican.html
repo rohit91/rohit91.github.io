@@ -1,149 +1,181 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <link href='//fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,700,400italic' rel='stylesheet' type='text/css'>
-
-    <link rel="stylesheet/less" type="text/css" href="https://rohitksingh.in/theme/stylesheet/style.less">
-    <script src="//cdnjs.cloudflare.com/ajax/libs/less.js/2.5.1/less.min.js" type="text/javascript"></script>
-
-  <link rel="stylesheet" type="text/css" href="https://rohitksingh.in/theme/pygments/default.min.css">
-  <link rel="stylesheet" type="text/css" href="https://rohitksingh.in/theme/font-awesome/css/font-awesome.min.css">
+      <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html" charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
 
 
-    <link href="https://rohitksingh.in/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Rohit's Blog Atom">
+  <title>Migrating blog to Pelican</title>
 
 
-
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="HandheldFriendly" content="True" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="robots" content="" />
+  <meta name="referrer" content="origin" />
+  <meta name="generator" content="Pelican" />
+  <link href="https://rohitksingh.in" rel="canonical" />
 
-    <!-- Chrome, Firefox OS and Opera -->
-    <meta name="theme-color" content="#333333">
-    <!-- Windows Phone -->
-    <meta name="msapplication-navbutton-color" content="#333333">
-    <!-- iOS Safari -->
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <!-- Feed -->
+      <link href="//rohitksingh.in/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Rohit's Blog Full Atom Feed" />
 
-<meta name="author" content="Rohit" />
-<meta name="description" content="Finally, after ages of procrastination, I've finally begun moving my blog to Pelican, a python based static site generator" />
-<meta name="keywords" content="python, pelican, blog">
-<meta property="og:site_name" content="Rohit's Blog"/>
-<meta property="og:title" content="Migrating blog to Pelican"/>
-<meta property="og:description" content="Finally, after ages of procrastination, I've finally begun moving my blog to Pelican, a python based static site generator"/>
-<meta property="og:locale" content="en_US"/>
-<meta property="og:url" content="https://rohitksingh.in/migrating-blog-to-pelican.html"/>
-<meta property="og:type" content="article"/>
-<meta property="article:published_time" content="2016-08-15 23:40:00+05:30"/>
-<meta property="article:modified_time" content="2016-08-31 23:40:00+05:30"/>
-<meta property="article:author" content="https://rohitksingh.in/author/rohit.html">
-<meta property="article:section" content="Software"/>
-<meta property="article:tag" content="python"/>
-<meta property="article:tag" content="pelican"/>
-<meta property="article:tag" content="blog"/>
-<meta property="og:image" content="">
-  <title>Rohit's Blog</title>
+  <link href="https://rohitksingh.in/theme/css/style.css" type="text/css" rel="stylesheet" />
+
+  <!-- Code highlight color scheme -->
+      <link href="https://rohitksingh.in/theme/css/code_blocks/github.css" rel="stylesheet">
+
+
+  <!-- Custom fonts -->
+  <link href='https://fonts.googleapis.com/css?family=Montserrat:400,300' rel='stylesheet' type='text/css' />
+  <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet" type="text/css" />
+
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+  <![endif]-->
+
+
+    <link href="https://rohitksingh.in/migrating-blog-to-pelican.html" rel="canonical" />
+
+        <meta name="description" content="Finally, after ages of procrastination, I've finally begun moving my blog to Pelican, a python based static site generator">
+
+        <meta name="author" content="Rohit">
+
+        <meta name="tags" content="python">
+        <meta name="tags" content="pelican">
+        <meta name="tags" content="blog">
+
+        <meta property="og:locale" content="" />
+    <meta property="og:site_name" content="Rohit's Blog" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Rohit's Blog" />
+    <meta property="og:description" content="Curious & inquisitive; Intrigued & fascinated by technology :)" />
+    <meta property="og:url" content="https://rohitksingh.in" />
+      <meta name="og:image" content="https://rohitksingh.in/theme/images/post-bg.jpg">
+
+  <meta property="og:type" content="article">
+            <meta property="article:author" content="https://rohitksingh.in/author/rohit.html">
+  <meta property="og:url" content="https://rohitksingh.in/migrating-blog-to-pelican.html">
+  <meta property="og:title" content="Migrating blog to Pelican">
+  <meta property="article:published_time" content="2016-08-15 23:40:00+05:30">
+            <meta property="og:description" content="Finally, after ages of procrastination, I've finally begun moving my blog to Pelican, a python based static site generator">
+
+            <meta property="og:image" content="https://rohitksingh.in/theme/images/post-bg.jpg">
+        <meta name="twitter:card" content="summary_large_image">
+        <meta name="twitter:site" content="@RohitK_Singh">
+        <meta name="twitter:title" content="Migrating blog to Pelican">
+        <meta name="twitter:url" content="https://rohitksingh.in/migrating-blog-to-pelican.html">
+
+            <meta name="twitter:image:src" content="https://rohitksingh.in/theme/images/post-bg.jpg">
+
+            <meta name="twitter:description" content="Finally, after ages of procrastination, I've finally begun moving my blog to Pelican, a python based static site generator">
 </head>
-<body>
-  <aside>
-    <div>
-      <a href="https://rohitksingh.in">
-        <img src="https://rohitksingh.in/theme/img/profile.png" alt="Rohit Singh" title="Rohit Singh">
-      </a>
-      <h1><a href="https://rohitksingh.in">Rohit Singh</a></h1>
-<p>Scientist . Engineer . Researcher . Designer . Lover . Dreamer . Artist . Perfect</p>      <nav>
-        <ul class="list">
-          <li><a href="https://rohitksingh.in" target="_blank">portfolio</a></li>
-          <li><a href="https://rohitksingh.in" target="_blank">stories</a></li>
-          <li><a href="https://rohitksingh.in" target="_blank">about</a></li>
-        </ul>
-      </nav>
-      <ul class="social">
-        <li><a class="sc-linkedin" href="https://www.linkedin.com/in/rohit-kumar-singh" target="_blank"><i class="fa fa-linkedin"></i></a></li>
-        <li><a class="sc-github" href="https://github.com/rohitk-singh" target="_blank"><i class="fa fa-github"></i></a></li>
-        <li><a class="sc-twitter" href="https://twitter.com/RohitK_Singh" target="_blank"><i class="fa fa-twitter"></i></a></li>
-        <li><a class="sc-rss" href="//rohitksingh.in/feeds/all.atom.xml" target="_blank"><i class="fa fa-rss"></i></a></li>
-      </ul>
+<!-- TODO : Body class -->
+<body class="home-template">
+
+<nav id="menu">
+  <a class="close-button">Close</a>
+  <div class="nav-wrapper">
+    <p class="nav-label">Menu</p>
+    <ul>
+          <li><a href="/archives.html" role="presentation">Archives</a></li>
+          <li><a href="/categories.html" role="presentation">Categories</a></li>
+          <li><a href="/tags.html" role="presentation">Tags</a></li>
+
+
+        <li class="nav-rss"><a href="//rohitksingh.in/feeds/all.atom.xml"><i class="ic ic-rss"></i> Subscribe</a></li>
+    </ul>
+  </div>
+</nav>
+    <!-- Progressbar -->
+    <div class="progress-container">
+        <span class="progress-bar"></span>
     </div>
-  </aside>
-  <main>
-    <nav>
-      <a href="https://rohitksingh.in">Home</a>
-      <a href="/archives.html">Archives</a>
-      <a href="/categories.html">Categories</a>
-      <a href="/tags.html">Tags</a>
-      <a href="https://rohitksingh.in/feeds/all.atom.xml">Atom</a>
-    </nav>
 
-<article>
-  <header>
-    <h1 id="migrating-blog-to-pelican">Migrating blog to Pelican</h1>
-    <p>Posted on Mon 15 August 2016 in <a href="https://rohitksingh.in/category/software.html">Software</a></p>
-  </header>
+    <!-- Page Header -->
+    <!-- Set your background image for this header on the line below. -->
+    <header id="post-header" class="has-cover">
+      <div class="inner">
+        <nav id="navigation">
+            <span id="home-button" class="nav-button">
+                <a class="home-button" href="https://rohitksingh.in" title="Home"><i class="ic ic-arrow-left"></i> Home</a>
+            </span>
+          <span id="menu-button" class="nav-button">
+            <a class="menu-button"><i class="ic ic-menu"></i> Menu</a>
+          </span>
+        </nav>
+        <h1 class="post-title">Migrating blog to Pelican</h1>
+        <!-- TODO : Proper class for headline -->
+        <span class="post-meta">
+                <a href="https://rohitksingh.in/author/rohit.html">Rohit</a>
+            | <time datetime="Mon 15 August 2016">Mon 15 August 2016</time>
+        </span>
+        <!-- TODO : Modified check -->
+            <span class="post-meta"> | Updated on Wed 31 August 2016</span>
+        
+            <div class="post-cover cover" style="background-image: url('https://rohitksingh.in/theme/images/post-bg.jpg')">
+        
+      </div>
+    </header>    
+
+  <section id="wrapper">
+    <a class="hidden-close"></a>
+
+    <!-- Post content -->
+    <main class="content" role="main">
+        <article class="post">
+        <div class="inner">
+            <section class="post-content">
+                
+            </section>
+
+            <section class="post-info">
+                <div class="post-share">
+                    <a class="twitter" href="https://twitter.com/share?text=Migrating blog to Pelican&amp;url=https://rohitksingh.in/migrating-blog-to-pelican.html" onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                    <i class="ic ic-twitter"></i><span class="hidden">Twitter</span>
+                    </a>
+                    <a class="facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://rohitksingh.in/migrating-blog-to-pelican.html" onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                    <i class="ic ic-facebook"></i><span class="hidden">Facebook</span>
+                    </a>
+                    <a class="googleplus" href="https://plus.google.com/share?url=https://rohitksingh.in/migrating-blog-to-pelican.html" onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                    <i class="ic ic-googleplus"></i><span class="hidden">Google+</span>
+                    </a>
+                    <div class="clear"></div>
+                </div>
+
+                <aside class="post-tags">
+<a href="https://rohitksingh.in/tag/python.html">python</a><a href="https://rohitksingh.in/tag/pelican.html">pelican</a><a href="https://rohitksingh.in/tag/blog.html">blog</a>                </aside>
+
+                <div class="clear"></div>
+
+ 
+
+                </section>
+
+
+                <aside class="post-nav">
+                    <div class="clear"></div>
+                </aside>
+
+            </div>
+        </article>
+    </main>
+      <!-- TODO : Body class -->
+    <div id="body-class" style="display: none;" class=""></div>
   
-  <div>
-    
-  </div>
-  <div class="tag-cloud">
-    <p>
-      <a href="https://rohitksingh.in/tag/python.html">python</a>
-      <a href="https://rohitksingh.in/tag/pelican.html">pelican</a>
-      <a href="https://rohitksingh.in/tag/blog.html">blog</a>
-    </p>
-  </div>
-</article>
+    <footer id="footer">
+      <div class="inner">
+        <section class="credits">
+          <span class="credits-theme">Theme <a href="https://github.com/arulrajnet/attila" rel="nofollow">Attila</a></span>
+          <span class="credits-software">Published with <a href="https://github.com/getpelican/pelican" rel="nofollow">Pelican</a></span>
+        </section>
+      </div>
+    </footer>
+  </section>
 
-    <footer>
-<p>
-  &copy; Rohit Singh 2016 - This work is licensed under a <a rel="license" href="https://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>
-</p>
-<p>Built using <a href="https://getpelican.com" target="_blank">Pelican</a> - <a href="https://github.com/alexandrevicenzi/flex" target="_blank">Flex</a> theme by <a href="https://alexandrevicenzi.com" target="_blank">Alexandre Vicenzi</a></p><p>
-  <a rel="license"
-     href="https://creativecommons.org/licenses/by-sa/4.0/"
-     target="_blank">
-    <img alt="Creative Commons License"
-         title="Creative Commons License"
-         style="border-width:0"
-         src="https://i.creativecommons.org/l/by-sa/4.0/80x15.png"
-         width="80"
-         height="15"/>
-  </a>
-</p>    </footer>
-  </main>
-
-
-
-
-
-<script type="application/ld+json">
-{
-  "@context" : "https://schema.org",
-  "@type" : "Blog",
-  "name": " Rohit's Blog ",
-  "url" : "https://rohitksingh.in",
-  "image": "",
-  "description": "Rohit Singh's Thoughts, Writings, Logs and Tinkerings"
-}
-</script>
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "BlogPosting",
-  "name": "Migrating blog to Pelican",
-  "headline": "Migrating blog to Pelican",
-  "datePublished": "2016-08-15 23:40:00+05:30",
-  "dateModified": "2016-08-31 23:40:00+05:30",
-  "author": {
-    "@type": "Person",
-    "name": "Rohit",
-    "url": "https://rohitksingh.in/author/rohit.html"
-  },
-  "image": "{{ SITEURL }}/{{ THEME_STATIC_DIR }}/img/profile.png",
-  "url": "https://rohitksingh.in/migrating-blog-to-pelican.html",
-  "description": "Finally, after ages of procrastination, I've finally begun moving my blog to Pelican, a python based static site generator"
-}
-</script></body>
+  <script type="text/javascript" src="https://rohitksingh.in/theme/js/script.js"></script>
+  
+</body>
 </html>
