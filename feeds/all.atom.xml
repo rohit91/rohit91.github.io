@@ -145,7 +145,7 @@
 &lt;span class="c1"&gt;-- Project : FT2232H Async FIFO&lt;/span&gt;
 
 &lt;span class="c1"&gt;-- License : The MIT License&lt;/span&gt;
-&lt;span class="c1"&gt;-- Copyright © 2015, 2016 Rohit K. Singh (contact [AT] rohitksingh.in)&lt;/span&gt;
+&lt;span class="c1"&gt;-- Copyright © 2015, 2016, 2017, 2018 Rohit K. Singh (contact [AT] rohitksingh.in)&lt;/span&gt;
 &lt;span class="c1"&gt;--------------------------------------------------------------------------------&lt;/span&gt;
 
 &lt;span class="k"&gt;library&lt;/span&gt; &lt;span class="nn"&gt;IEEE&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
